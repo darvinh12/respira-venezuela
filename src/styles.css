@@ -69,8 +69,10 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   display: flex; align-items: center; gap: 7px;
 }
 .brand-mark {
-  width: 1.5em; height: 1.5em;
+  width: 1.9em; height: 1.9em; box-sizing: border-box;
   object-fit: contain; display: inline-block;
+  border-radius: 50%; background: #fff; padding: 3px;
+  box-shadow: 0 1px 4px rgba(46,107,126,.18), 0 0 0 1px rgba(46,107,126,.08);
 }
 .brand-text { font-family: 'Lora', Georgia, serif; line-height: 1; }
 .brand-sub { font-weight: 500; color: var(--gris); }
