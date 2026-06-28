@@ -447,7 +447,7 @@ export function FrasesSeguridad() {
       <h1 style={{ textAlign: 'center' }}>Frases que dan seguridad</h1>
       <p className="tool-sub" style={{ textAlign: 'center' }}>Tus palabras y tu calma son su mayor refugio. Háblale a su altura, mirándolo/a a los ojos.</p>
       <h3 className="bloque-title hacer"><Heart size={20} aria-hidden="true" /> Dile</h3>
-      <ul className="evitar" style={{ listStyle: 'none', paddingLeft: 0 }}>{decir.map((t, k) => <li key={k}>{t}</li>)}</ul>
+      <ul className="decir">{decir.map((t, k) => <li key={k}>{t}</li>)}</ul>
       <h3 className="bloque-title evitar-title"><Hand size={20} aria-hidden="true" /> Mejor evita</h3>
       <ul className="evitar">{evitar.map((t, k) => <li key={k}>{t}</li>)}</ul>
       <p className="fuente" style={{ textAlign: 'center' }}>Cómo hablar con niños tras una catástrofe · UNICEF / Save the Children</p>
