@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Eye, Hand, Ear, Flower2, Citrus, Sparkles } from 'lucide-react'
 
 // Respiración guiada animada: inhala 4 · sostén 4 · exhala 6
 export function Respiracion() {
@@ -54,11 +55,11 @@ export function Respiracion() {
 // Grounding 5-4-3-2-1 para anclarse al presente
 export function Grounding() {
   const pasos = [
-    { n: 5, sentido: 'cosas que puedes VER', icon: '👁️', color: '#2E6B7E' },
-    { n: 4, sentido: 'cosas que puedes TOCAR', icon: '✋', color: '#7FA88B' },
-    { n: 3, sentido: 'cosas que puedes OÍR', icon: '👂', color: '#F2B705' },
-    { n: 2, sentido: 'cosas que puedes OLER', icon: '👃', color: '#D98A4A' },
-    { n: 1, sentido: 'cosa que puedes SABOREAR', icon: '👅', color: '#C75D4A' },
+    { n: 5, sentido: 'cosas que puedes VER', Ic: Eye, color: '#2E6B7E' },
+    { n: 4, sentido: 'cosas que puedes TOCAR', Ic: Hand, color: '#7FA88B' },
+    { n: 3, sentido: 'cosas que puedes OÍR', Ic: Ear, color: '#E0A93E' },
+    { n: 2, sentido: 'cosas que puedes OLER', Ic: Flower2, color: '#D98A4A' },
+    { n: 1, sentido: 'cosa que puedes SABOREAR', Ic: Citrus, color: '#C75D4A' },
   ]
   const [paso, setPaso] = useState(0)
   const fin = paso >= pasos.length
@@ -70,7 +71,9 @@ export function Grounding() {
 
       {!fin ? (
         <div className="ground-card" style={{ borderColor: pasos[paso].color }}>
-          <span className="ground-icon">{pasos[paso].icon}</span>
+          <span className="ground-icon" style={{ color: pasos[paso].color }}>
+            {(() => { const I = pasos[paso].Ic; return <I size={46} aria-hidden="true" /> })()}
+          </span>
           <div className="ground-num" style={{ color: pasos[paso].color }}>{pasos[paso].n}</div>
           <div className="ground-text">{pasos[paso].sentido}</div>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
@@ -80,7 +83,7 @@ export function Grounding() {
         </div>
       ) : (
         <div className="ground-card done">
-          <span className="ground-icon">💚</span>
+          <span className="ground-icon" style={{ color: '#7FA88B' }}><Sparkles size={46} aria-hidden="true" /></span>
           <div className="ground-text">Lo lograste. Estás aquí, estás a salvo en este momento.</div>
           <button className="accion-rapida" onClick={() => setPaso(0)}>Repetir</button>
         </div>

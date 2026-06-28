@@ -9,25 +9,29 @@
 export const personas = [
   {
     id: 'mi',
-    icon: '🫂',
+    icon: 'Heart',
+    color: 'azul',
     titulo: 'Necesito apoyo para mí',
     desc: 'Estoy asustado/a, ansioso/a o no sé cómo seguir.',
   },
   {
     id: 'padres',
-    icon: '👨‍👩‍👧',
+    icon: 'Baby',
+    color: 'verde',
     titulo: 'Soy madre, padre o cuido niños',
     desc: 'Quiero ayudar a un niño o niña a sentirse seguro/a.',
   },
   {
     id: 'familiar',
-    icon: '🧓',
+    icon: 'Users',
+    color: 'amarillo',
     titulo: 'Cuido a un familiar o adulto mayor',
     desc: 'Acompaño a alguien que la está pasando mal.',
   },
   {
     id: 'rescatista',
-    icon: '🚒',
+    icon: 'Siren',
+    color: 'terracota',
     titulo: 'Soy rescatista o voluntario/a',
     desc: 'Ayudo a otros y necesito cuidarme también.',
   },
@@ -38,32 +42,32 @@ export const personas = [
 // ---------------------------------------------------------------------------
 export const situaciones = {
   mi: [
-    { id: 'panico', icon: '😮‍💨', titulo: 'Estoy en pánico, no puedo respirar', urgente: true },
-    { id: 'replicas', icon: '🌍', titulo: 'Tiemblo cada vez que hay una réplica' },
-    { id: 'insomnio', icon: '🌙', titulo: 'No puedo dormir por miedo a que tiemble' },
-    { id: 'perdida-casa', icon: '🏚️', titulo: 'Perdí mi casa, lo perdí todo' },
-    { id: 'duelo', icon: '🕊️', titulo: 'Perdí a un ser querido' },
-    { id: 'ansiedad', icon: '😰', titulo: 'Siento ansiedad y angustia todo el tiempo' },
-    { id: 'normales', icon: '💚', titulo: '¿Es normal sentirme así?' },
+    { id: 'panico', icon: 'Wind', titulo: 'Estoy en pánico, no puedo respirar', urgente: true },
+    { id: 'replicas', icon: 'Activity', titulo: 'Tiemblo cada vez que hay una réplica' },
+    { id: 'insomnio', icon: 'Moon', titulo: 'No puedo dormir por miedo a que tiemble' },
+    { id: 'perdida-casa', icon: 'Home', titulo: 'Perdí mi casa, lo perdí todo' },
+    { id: 'duelo', icon: 'HeartCrack', titulo: 'Perdí a un ser querido' },
+    { id: 'ansiedad', icon: 'CloudRain', titulo: 'Siento ansiedad y angustia todo el tiempo' },
+    { id: 'normales', icon: 'CircleHelp', titulo: '¿Es normal sentirme así?' },
   ],
   padres: [
-    { id: 'nino-llora', icon: '😢', titulo: 'Mi hijo/a no para de llorar o está muy asustado/a' },
-    { id: 'explicar', icon: '🗣️', titulo: '¿Cómo le explico lo que pasó?' },
-    { id: 'contar-muerte', icon: '🕊️', titulo: 'Perdimos a un familiar, ¿cómo se lo digo?' },
-    { id: 'nino-dormir', icon: '🌙', titulo: 'No quiere dormir solo/a o tiene pesadillas' },
-    { id: 'regresion', icon: '🧸', titulo: 'Volvió a actuar como más pequeño/a (pipí, no se despega)' },
-    { id: 'cuidarte', icon: '💛', titulo: 'Yo también estoy agotado/a (cuídate tú)' },
+    { id: 'nino-llora', icon: 'Baby', titulo: 'Mi hijo/a no para de llorar o está muy asustado/a' },
+    { id: 'explicar', icon: 'MessagesSquare', titulo: '¿Cómo le explico lo que pasó?' },
+    { id: 'contar-muerte', icon: 'HeartCrack', titulo: 'Perdimos a un familiar, ¿cómo se lo digo?' },
+    { id: 'nino-dormir', icon: 'Moon', titulo: 'No quiere dormir solo/a o tiene pesadillas' },
+    { id: 'regresion', icon: 'ToyBrick', titulo: 'Volvió a actuar como más pequeño/a (pipí, no se despega)' },
+    { id: 'cuidarte', icon: 'HeartHandshake', titulo: 'Yo también estoy agotado/a (cuídate tú)' },
   ],
   familiar: [
-    { id: 'escuchar', icon: '👂', titulo: 'Cómo acompañar y escuchar sin presionar' },
-    { id: 'bloqueado', icon: '😶', titulo: 'Está bloqueado/a, no habla ni reacciona' },
-    { id: 'mayor', icon: '🧓', titulo: 'Cómo ayudar a un adulto mayor' },
-    { id: 'cuando-derivar', icon: '🆘', titulo: '¿Cuándo necesita ayuda profesional ya?' },
+    { id: 'escuchar', icon: 'Ear', titulo: 'Cómo acompañar y escuchar sin presionar' },
+    { id: 'bloqueado', icon: 'CircleOff', titulo: 'Está bloqueado/a, no habla ni reacciona' },
+    { id: 'mayor', icon: 'Accessibility', titulo: 'Cómo ayudar a un adulto mayor' },
+    { id: 'cuando-derivar', icon: 'LifeBuoy', titulo: '¿Cuándo necesita ayuda profesional ya?' },
   ],
   rescatista: [
-    { id: 'pfa', icon: '🤝', titulo: 'Primeros Auxilios Psicológicos: Mirar·Escuchar·Conectar' },
-    { id: 'que-no-decir', icon: '🚫', titulo: 'Qué decir y qué NO decir a una víctima' },
-    { id: 'no-quemarte', icon: '🔥', titulo: 'No te quemes: cuidar al que cuida' },
+    { id: 'pfa', icon: 'HeartHandshake', titulo: 'Primeros Auxilios Psicológicos: Mirar·Escuchar·Conectar' },
+    { id: 'que-no-decir', icon: 'MessageSquareWarning', titulo: 'Qué decir y qué NO decir a una víctima' },
+    { id: 'no-quemarte', icon: 'Flame', titulo: 'No te quemes: cuidar al que cuida' },
   ],
 }
 
@@ -399,9 +403,25 @@ export const directorio = [
 // ---------------------------------------------------------------------------
 // VIDEOS — enlaces a fuentes serias (requieren internet). Verificar/curar.
 // ---------------------------------------------------------------------------
+// Videos verificados (HTTP 200 vía oEmbed). categoria agrupa por tema.
 export const videos = [
-  { titulo: 'Primeros Auxilios Psicológicos (OPS/OMS)', fuente: 'OPS/OMS', url: 'https://www.youtube.com/results?search_query=primeros+auxilios+psicol%C3%B3gicos+OPS+OMS' },
-  { titulo: 'Respiración para calmar la ansiedad', fuente: 'Salud mental', url: 'https://www.youtube.com/results?search_query=respiraci%C3%B3n+guiada+para+la+ansiedad' },
-  { titulo: 'Cómo ayudar a los niños tras un desastre', fuente: 'UNICEF / Cruz Roja', url: 'https://www.youtube.com/results?search_query=como+ayudar+a+los+ni%C3%B1os+despu%C3%A9s+de+un+terremoto' },
-  { titulo: 'Manejo del duelo tras una pérdida', fuente: 'Cruz Roja', url: 'https://www.youtube.com/results?search_query=manejo+del+duelo+cruz+roja' },
+  // Primeros auxilios psicológicos
+  { titulo: 'Primeros Auxilios Psicológicos', fuente: 'Cruz Roja Mexicana', categoria: 'Primeros auxilios psicológicos', url: 'https://www.youtube.com/watch?v=MnxsBh__kn8' },
+  { titulo: 'Primeros Auxilios Psicológicos en contextos de desastre', fuente: 'Cruz Roja Argentina', categoria: 'Primeros auxilios psicológicos', url: 'https://www.youtube.com/watch?v=myhDRcOIkC4' },
+  // Ayudar a los niños
+  { titulo: 'Apoyo emocional a los niños tras un sismo', fuente: 'NotimexTV', categoria: 'Ayudar a los niños', url: 'https://www.youtube.com/watch?v=uw0OmSAdTds' },
+  { titulo: 'Cómo superar el miedo a los sismos (recomendaciones psicológicas)', fuente: 'Centro Universitario de Estudios Jurídicos', categoria: 'Ayudar a los niños', url: 'https://www.youtube.com/watch?v=ZPDVIs-YnHM' },
+  // Duelo y pérdida
+  { titulo: 'Ante una pérdida significativa: manejo del duelo', fuente: 'OPS/PAHO TV', categoria: 'Duelo y pérdida', url: 'https://www.youtube.com/watch?v=qUGkJr61iG0' },
+  { titulo: 'Manejo y tratamiento del duelo', fuente: 'Telesalud Minsa', categoria: 'Duelo y pérdida', url: 'https://www.youtube.com/watch?v=QKWJPVsvufA' },
+  // Ataques de pánico
+  { titulo: 'Ataques de pánico: qué son y cómo recuperar el control', fuente: 'Revista MSP', categoria: 'Ataques de pánico', url: 'https://www.youtube.com/watch?v=ypfpyHa72FM' },
+  { titulo: 'Ataques de pánico: cómo controlarlos', fuente: 'Televisión Pública (ADN Buena Salud)', categoria: 'Ataques de pánico', url: 'https://www.youtube.com/watch?v=__HIGQmu8So' },
+  // Calmar la ansiedad (incluye respiración)
+  { titulo: 'Prevención y manejo de la ansiedad', fuente: 'Cruz Roja Española', categoria: 'Calmar la ansiedad', url: 'https://www.youtube.com/watch?v=M_no3cxZJws' },
+  { titulo: 'Ejercicio de respiración para la ansiedad y el estrés (5 min)', fuente: 'Respiración guiada', categoria: 'Calmar la ansiedad', url: 'https://www.youtube.com/watch?v=0mXT7lc-la0' },
+  { titulo: 'Respiración 4-7-8 para reducir la ansiedad', fuente: 'Gabriela Litschi', categoria: 'Calmar la ansiedad', url: 'https://www.youtube.com/watch?v=EGO5m_DBzF8' },
+  // Dormir mejor
+  { titulo: 'Cinco pautas para evitar el insomnio y dormir mejor', fuente: 'Dr. Javier Albares (AprendemosJuntos)', categoria: 'Dormir mejor', url: 'https://www.youtube.com/watch?v=mBVRrNumTnQ' },
+  { titulo: 'Relajación guiada para dormir', fuente: 'Malova Elena', categoria: 'Dormir mejor', url: 'https://www.youtube.com/watch?v=75Wh25sAm-U' },
 ]
