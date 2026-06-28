@@ -3,7 +3,7 @@
 //  - Navegaciones (HTML): network-first con respaldo al index cacheado (offline).
 //  - Assets estáticos con hash (JS/CSS/imágenes/fuentes): cache-first + relleno en segundo plano.
 //  - Cache versionado; se limpian versiones viejas en 'activate'.
-const VERSION = 'respira-v7'
+const VERSION = 'respira-v8'
 const CACHE = VERSION
 
 // App-shell mínimo. Los bundles de Vite (/assets/*) llevan hash y se cachean
@@ -13,7 +13,6 @@ const APP_SHELL = [
   '/index.html',
   '/manifest.webmanifest',
   '/logo.png',
-  '/favicon.png',
   '/icon-192.png',
   '/icon-512.png',
 ]
