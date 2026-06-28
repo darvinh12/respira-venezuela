@@ -56,6 +56,7 @@ export const situaciones = {
     { id: 'contar-muerte', icon: 'HeartCrack', titulo: 'Perdimos a un familiar, ¿cómo se lo digo?' },
     { id: 'nino-dormir', icon: 'Moon', titulo: 'No quiere dormir solo/a o tiene pesadillas' },
     { id: 'regresion', icon: 'ToyBrick', titulo: 'Volvió a actuar como más pequeño/a (pipí, no se despega)' },
+    { id: 'neurodivergente', icon: 'Accessibility', titulo: 'Mi hijo/a es neurodivergente o con necesidades especiales' },
     { id: 'cuidarte', icon: 'HeartHandshake', titulo: 'Yo también estoy agotado/a (cuídate tú)' },
   ],
   familiar: [
@@ -323,6 +324,23 @@ export const guias = {
     fuente: 'OMS / OPS',
   },
 
+  neurodivergente: {
+    titulo: 'Mi hijo/a es neurodivergente o con necesidades especiales',
+    intro: 'Niños y niñas autistas, con TDAH, discapacidad intelectual o sensorial pueden vivir el sismo y las réplicas con mucha más intensidad. La rutina y la previsibilidad son su mayor refugio.',
+    pasos: [
+      'Recupera la rutina y anticipa: avisa qué va a pasar con frases cortas y concretas ("ahora comemos, luego dormimos").',
+      'Baja la carga sensorial: menos ruido y luz fuerte; ofrece audífonos, una manta o su objeto/juguete de siempre.',
+      'Comunícate como mejor te entienda: dibujos, pictogramas, señas, objetos reales o gestos, no solo palabras.',
+      'Respeta su autorregulación: si se balancea, aletea o repite algo para calmarse, déjalo; eso lo/a ayuda.',
+      'Ten a mano lo esencial: medicación, audífono, lentes, su tablero o comunicador, y una identificación con su nombre y un contacto.',
+      'Sé su ancla: tu calma y tu presencia constante regulan más que cualquier explicación.',
+    ],
+    evitar: ['Cambiar de golpe rutinas, lugares y cuidadores', 'Forzar contacto físico, miradas o que "se porte normal"', 'Saturarlo/a de gente, ruido, preguntas o noticias en pantalla'],
+    cuandoBuscar: 'Si deja de comer o dormir varios días, se autolesiona más de lo habitual o pierde habilidades que ya tenía, contacta a su médico/terapeuta o una línea de apoyo.',
+    accionRapida: { label: 'Ver líneas de ayuda ahora', tool: 'directorio' },
+    fuente: 'Primeros Auxilios Psicológicos y apoyo a la discapacidad en emergencias · OPS / NCTSN',
+  },
+
   // ---- RESCATISTA ----
   pfa: {
     titulo: 'Primeros Auxilios Psicológicos: Mirar · Escuchar · Conectar',
@@ -376,9 +394,18 @@ export const directorio = [
   {
     grupo: 'Apoyo psicológico (Venezuela)',
     items: [
-      { nombre: 'LAPSI – Federación de Psicólogos de Venezuela', detalle: 'Primeros auxilios psicológicos, gratis y confidencial (viernes a domingo, 8am–8pm)', tels: ['0212-4163116', '0424-2907338'] },
-      { nombre: 'UCAB – PsicoLínea', detalle: 'Línea de salud mental de la Universidad Católica Andrés Bello', tels: ['0414-1217882'] },
-      { nombre: 'Psicólogos sin Fronteras Venezuela', detalle: 'Apoyo psicosocial en crisis y procesos de duelo', tels: ['0424-9270304'] },
+      { nombre: 'Línea 0-800-AYUDA-01 (Gobierno)', detalle: 'Apoyo psicológico telefónico gratuito y nacional, activado tras el terremoto (psicólogos y psiquiatras)', tels: ['0-800-29832-01'] },
+      { nombre: 'LAPSI – Federación de Psicólogos de Venezuela', detalle: 'Primeros auxilios psicológicos, gratis y confidencial (viernes a domingo, 8am–8pm)', tels: ['0424-2907338', '0212-4163116', '0212-4163118'] },
+      { nombre: 'UCAB – PsicoLínea', detalle: 'Línea gratuita y confidencial de salud mental de la UCAB (jueves, 8am–5pm)', tels: ['0414-1217882', '0424-1723981'] },
+      { nombre: 'Psicólogos sin Fronteras Venezuela', detalle: 'Apoyo psicosocial en crisis y procesos de duelo', tels: ['0424-9270304', '0412-9270304'] },
+      { nombre: 'CECODAP', detalle: 'Apoyo y protección psicológica a niñas, niños y adolescentes', tels: ['0424-2842359'] },
+      { nombre: 'INVEDIN', detalle: 'Apoyo a niños y personas con discapacidad y necesidades especiales', tels: ['0414-9065863'] },
+      { nombre: 'PLAFAM', detalle: 'Atención en salud y apoyo psicológico', tels: ['0412-2273712'] },
+      { nombre: 'Tinta Violeta', detalle: 'Apoyo psicológico a mujeres y atención en violencia de género', tels: ['0412-6924062'] },
+      { nombre: 'Hola Doc', detalle: 'Orientación en salud y bienestar emocional', tels: ['0212-7717190'] },
+      { nombre: 'Rehabilitarte', detalle: 'Apoyo psicológico y acompañamiento emocional', tels: ['0424-6115506'] },
+      { nombre: 'Siempre Juntos', detalle: 'Apoyo emocional y acompañamiento', tels: ['0426-5723422'] },
+      { nombre: 'SNC', detalle: 'Línea de apoyo psicológico', tels: ['0414-4265181'] },
     ],
   },
   {
@@ -386,7 +413,7 @@ export const directorio = [
     items: [
       { nombre: 'Emergencias (número único nacional)', detalle: 'Marca 171 (CANTV) · *1 (Movilnet) · 112 (Digitel) · 911 (Movistar)', tels: ['171'], urgente: true },
       { nombre: 'Protección Civil Nacional', detalle: 'Atención y coordinación ante desastres', tels: ['0800-5588427', '0212-6311522'] },
-      { nombre: 'Cruz Roja Venezolana', detalle: 'Ambulancias y apoyo en emergencias', tels: ['0212-5712411', '0212-5714574'] },
+      { nombre: 'Cruz Roja Venezolana', detalle: 'Ambulancias, emergencias y restablecimiento del contacto con familiares (RCF)', tels: ['0212-5712411', '0212-5714574'] },
       { nombre: 'Bomberos de Caracas', detalle: 'Rescate y atención de emergencias (Caracas)', tels: ['0212-5422444'] },
     ],
   },
