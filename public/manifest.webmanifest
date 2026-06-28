@@ -1,0 +1,18 @@
+{
+  "name": "Respira Venezuela",
+  "short_name": "Respira",
+  "description": "Apoyo psicológico tras el terremoto en Venezuela",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF6EF",
+  "theme_color": "#2E6B7E",
+  "lang": "es-VE",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
