@@ -146,17 +146,17 @@ function Persona({ personaId, go }) {
           <h2 className="section-title">Calmar a tu hijo/a</h2>
           <p className="section-hint">Juegos y herramientas para hacer juntos y bajar el miedo.</p>
           <div className="cards">
-            <button className="card sit-card" onClick={() => go({ name: 'home' })}>
+            <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'frasco' })}>
               <span className="chip chip-amarillo"><Sparkles size={24} /></span>
               <span className="card-title">Frasco de la calma</span>
               <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
             </button>
-            <button className="card sit-card" onClick={() => go({ name: 'home' })}>
+            <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'peluche' })}>
               <span className="chip chip-verde"><Heart size={24} /></span>
               <span className="card-title">Respira con tu peluche</span>
               <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
             </button>
-            <button className="card sit-card" onClick={() => go({ name: 'home' })}>
+            <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'vela' })}>
               <span className="chip chip-terracota"><Flame size={24} /></span>
               <span className="card-title">Apaga la vela</span>
               <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
