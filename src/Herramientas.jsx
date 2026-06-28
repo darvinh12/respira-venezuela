@@ -33,7 +33,15 @@ function Breath({ titulo, sub, fases, fuente }) {
             transitionDuration: `${activo ? fase.dur : 400}ms`,
           }}
         >
-          <span>{activo ? fase.t : 'Pausa'}</span>
+          <span
+            className="breath-word"
+            style={{
+              transform: `scale(${activo ? (fase.w || 1) : 1})`,
+              transitionDuration: `${activo ? fase.dur : 400}ms`,
+            }}
+          >
+            {activo ? fase.t : 'Pausa'}
+          </span>
         </div>
       </div>
       <p className="ciclos">Ciclos completados: {ciclos}</p>
@@ -50,9 +58,9 @@ function Breath({ titulo, sub, fases, fuente }) {
 // Respiración diafragmática: inhala 4 · sostén 4 · exhala 6
 export function Respiracion() {
   const fases = [
-    { t: 'Inhala', dur: 4000, scale: 1.6 },
-    { t: 'Sostén', dur: 4000, scale: 1.6 },
-    { t: 'Exhala', dur: 6000, scale: 1.0 },
+    { t: 'Inhala', dur: 4000, scale: 1.6, w: 1.18 },
+    { t: 'Sostén', dur: 4000, scale: 1.6, w: 1.18 },
+    { t: 'Exhala', dur: 6000, scale: 1.0, w: 0.85 },
   ]
   return (
     <Breath
@@ -67,10 +75,10 @@ export function Respiracion() {
 // Respiración en caja 4-4-4-4 (usada por equipos de emergencia y rescate)
 export function RespiracionCaja() {
   const fases = [
-    { t: 'Inhala', dur: 4000, scale: 1.6 },
-    { t: 'Sostén', dur: 4000, scale: 1.6 },
-    { t: 'Exhala', dur: 4000, scale: 1.0 },
-    { t: 'Sostén', dur: 4000, scale: 1.0 },
+    { t: 'Inhala', dur: 4000, scale: 1.6, w: 1.18 },
+    { t: 'Sostén', dur: 4000, scale: 1.6, w: 1.18 },
+    { t: 'Exhala', dur: 4000, scale: 1.0, w: 0.85 },
+    { t: 'Sostén', dur: 4000, scale: 1.0, w: 0.85 },
   ]
   return (
     <Breath

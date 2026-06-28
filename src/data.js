@@ -394,7 +394,6 @@ export const directorio = [
   {
     grupo: 'Apoyo psicológico (Venezuela)',
     items: [
-      { nombre: 'Línea 0-800-AYUDA-01 (Gobierno)', detalle: 'Apoyo psicológico telefónico gratuito y nacional, activado tras el terremoto (psicólogos y psiquiatras)', tels: ['0-800-29832-01'] },
       { nombre: 'LAPSI – Federación de Psicólogos de Venezuela', detalle: 'Primeros auxilios psicológicos, gratis y confidencial (viernes a domingo, 8am–8pm)', tels: ['0424-2907338', '0212-4163116', '0212-4163118'] },
       { nombre: 'UCAB – PsicoLínea', detalle: 'Línea gratuita y confidencial de salud mental de la UCAB (jueves, 8am–5pm)', tels: ['0414-1217882', '0424-1723981'] },
       { nombre: 'Psicólogos sin Fronteras Venezuela', detalle: 'Apoyo psicosocial en crisis y procesos de duelo', tels: ['0424-9270304', '0412-9270304'] },
@@ -406,6 +405,7 @@ export const directorio = [
       { nombre: 'Rehabilitarte', detalle: 'Apoyo psicológico y acompañamiento emocional', tels: ['0424-6115506'] },
       { nombre: 'Siempre Juntos', detalle: 'Apoyo emocional y acompañamiento', tels: ['0426-5723422'] },
       { nombre: 'SNC', detalle: 'Línea de apoyo psicológico', tels: ['0414-4265181'] },
+      { nombre: 'Línea 0-800-AYUDA-01 (Gobierno)', detalle: 'Apoyo psicológico telefónico gratuito y nacional, activado tras el terremoto (psicólogos y psiquiatras)', tels: ['0-800-29832-01'] },
     ],
   },
   {
