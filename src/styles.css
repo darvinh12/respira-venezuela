@@ -72,7 +72,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   width: 28px; height: 28px; border-radius: 50%;
   object-fit: contain; display: inline-block;
 }
-.brand-sub { font-family: 'Nunito'; font-weight: 600; color: var(--gris); font-size: .8rem; }
+.brand-sub { font-family: 'Nunito'; font-weight: 600; color: var(--gris); font-size: 1rem; align-self: baseline; }
 .header-btn {
   display: flex; align-items: center; gap: 2px;
   border: none; background: none; cursor: pointer;
