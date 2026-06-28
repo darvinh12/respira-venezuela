@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Eye, Hand, Ear, Flower2, Citrus, Sparkles, Heart, Activity, Cloud } from 'lucide-react'
+import { Eye, Hand, Ear, Flower2, Citrus, Sparkles, Heart, Activity, Cloud, Flame, Home, HeartHandshake } from 'lucide-react'
 
 // Componente de respiración animada reutilizable (acepta distintos patrones).
 function Breath({ titulo, sub, fases, fuente }) {
@@ -241,6 +241,216 @@ export function LugarSeguro() {
         </div>
       )}
       <p className="fuente">Visualización del lugar seguro · Primeros auxilios psicológicos OMS</p>
+    </div>
+  )
+}
+
+/* ============ Herramientas para calmar a los niños/as ============ */
+
+// Frasco de la calma (calm jar / glitter jar): el niño "agita" y mira la
+// purpurina bajar mientras respira. Animación de partículas en canvas.
+export function FrascoCalma() {
+  const canvasRef = useRef(null)
+  const partsRef = useRef([])
+  const rafRef = useRef(null)
+  const settledRef = useRef(false)
+  const [calma, setCalma] = useState(false)
+
+  const W = 220, H = 300
+  const colors = ['#F2B705', '#2E6B7E', '#7FA88B', '#C75D4A', '#E0A93E', '#9CC0A8']
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const N = 95
+    const parts = []
+    for (let i = 0; i < N; i++) {
+      parts.push({
+        x: 18 + Math.random() * (W - 36),
+        y: H - 16 - Math.random() * 70,
+        vx: (Math.random() - 0.5) * 12,
+        vy: (Math.random() - 0.5) * 12 - 3,
+        r: 2.4 + Math.random() * 2.6,
+        c: colors[i % colors.length],
+      })
+    }
+    partsRef.current = parts
+    let settledFrames = 0
+    const floor = H - 12
+
+    const step = () => {
+      ctx.clearRect(0, 0, W, H)
+      let moving = 0
+      for (const p of parts) {
+        p.vy += 0.11
+        p.vx *= 0.97
+        p.vy *= 0.97
+        p.x += p.vx
+        p.y += p.vy
+        if (p.x < 12) { p.x = 12; p.vx *= -0.4 }
+        if (p.x > W - 12) { p.x = W - 12; p.vx *= -0.4 }
+        if (p.y > floor) { p.y = floor; p.vy *= -0.22; p.vx *= 0.82 }
+        if (p.y < 12) { p.y = 12; p.vy *= -0.3 }
+        if (Math.abs(p.vx) + Math.abs(p.vy) > 0.2) moving++
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+        ctx.fillStyle = p.c
+        ctx.fill()
+      }
+      if (moving < 3) settledFrames++; else settledFrames = 0
+      if (settledFrames > 24 && !settledRef.current) { settledRef.current = true; setCalma(true) }
+      if (moving >= 3 && settledRef.current) { settledRef.current = false; setCalma(false) }
+      rafRef.current = requestAnimationFrame(step)
+    }
+    rafRef.current = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [])
+
+  const agitar = () => {
+    for (const p of partsRef.current) {
+      p.vx = (Math.random() - 0.5) * 16
+      p.vy = (Math.random() - 0.5) * 16 - 3
+    }
+    settledRef.current = false
+    setCalma(false)
+  }
+
+  return (
+    <div className="tool">
+      <h1>Frasco de la calma</h1>
+      <p className="tool-sub">Agita el frasco y miren juntos cómo baja la purpurina. Cuando todo se asiente, su cuerpo también estará más tranquilo.</p>
+      <div className="frasco">
+        <canvas ref={canvasRef} width={W} height={H} aria-hidden="true" />
+        <div className="frasco-tapa" aria-hidden="true" />
+      </div>
+      <p className="ciclos">{calma ? '✨ Todo en calma' : '… respira mientras baja'}</p>
+      <div className="tool-actions">
+        <button className="accion-rapida" onClick={agitar}>Agitar el frasco</button>
+      </div>
+      <p className="fuente">Frasco de la calma (Montessori) · apoyo de autorregulación infantil</p>
+    </div>
+  )
+}
+
+// Respiración con peluche: el niño pone un peluche en la barriga y lo ve
+// subir (inhala) y bajar (exhala). Inhala 4 · exhala 6.
+export function RespiracionPeluche() {
+  const fases = [
+    { t: 'Infla la barriga', dur: 4000, scale: 1.5 },
+    { t: 'Baja despacito', dur: 6000, scale: 1.0 },
+  ]
+  const [i, setI] = useState(0)
+  const [activo, setActivo] = useState(true)
+  const timer = useRef(null)
+
+  useEffect(() => {
+    if (!activo) return
+    timer.current = setTimeout(() => setI((p) => (p + 1) % fases.length), fases[i].dur)
+    return () => clearTimeout(timer.current)
+  }, [i, activo])
+
+  const fase = fases[i]
+  return (
+    <div className="tool">
+      <h1>Respira con tu peluche</h1>
+      <p className="tool-sub">Acuesta a tu hijo/a y pon un peluche en su barriga. A respirar juntos: que el peluche suba y baje despacito.</p>
+      <div className="breath-wrap">
+        <div
+          className="breath-circle peluche"
+          style={{ transform: `scale(${activo ? fase.scale : 1})`, transitionDuration: `${activo ? fase.dur : 400}ms` }}
+        >
+          <span role="img" aria-label="peluche">🧸</span>
+        </div>
+      </div>
+      <p className="ciclos">{activo ? fase.t : 'Pausa'}</p>
+      <div className="tool-actions">
+        <button className="accion-rapida" onClick={() => setActivo((a) => !a)}>{activo ? 'Pausar' : 'Continuar'}</button>
+      </div>
+      <p className="fuente">Respiración con peluche (belly breathing) · UNICEF / Save the Children</p>
+    </div>
+  )
+}
+
+// Soplar la vela: "toma aire... y sopla despacio". La llama se inclina al exhalar.
+export function SoplarVela() {
+  const fases = [
+    { t: 'Toma aire por la nariz', dur: 4000, soplando: false },
+    { t: 'Sopla la vela despacito', dur: 5000, soplando: true },
+  ]
+  const [i, setI] = useState(0)
+  const [activo, setActivo] = useState(true)
+  const timer = useRef(null)
+
+  useEffect(() => {
+    if (!activo) return
+    timer.current = setTimeout(() => setI((p) => (p + 1) % fases.length), fases[i].dur)
+    return () => clearTimeout(timer.current)
+  }, [i, activo])
+
+  const fase = fases[i]
+  return (
+    <div className="tool">
+      <h1>Apaga la vela</h1>
+      <p className="tool-sub">Tomamos aire oliendo una flor… y soplamos despacito como para apagar una velita, sin que se apague del todo.</p>
+      <div className="vela-wrap">
+        <div className="vela">
+          <span className={'vela-flama' + (activo && fase.soplando ? ' soplando' : '')} aria-hidden="true" />
+          <span className="vela-cuerpo" aria-hidden="true" />
+        </div>
+      </div>
+      <p className="ciclos">{activo ? fase.t : 'Pausa'}</p>
+      <div className="tool-actions">
+        <button className="accion-rapida" onClick={() => setActivo((a) => !a)}>{activo ? 'Pausar' : 'Continuar'}</button>
+      </div>
+      <p className="fuente">Respiración «huele la flor, sopla la vela» · Child Mind Institute</p>
+    </div>
+  )
+}
+
+// Guía: Rincón de la calma (cómo armar un espacio seguro en casa).
+export function RinconCalma() {
+  const items = [
+    'Elige un rincón tranquilo: una esquina, una carpa con sábanas o detrás del sofá.',
+    'Pon cojines, una manta suave y un peluche o muñeco preferido.',
+    'Agrega algo para las manos: una pelota antiestrés, plastilina o el frasco de la calma.',
+    'Deja una luz suave o una linterna; nada de pantallas.',
+    'Explícale: «Este es tu lugar para calmarte, puedes venir cuando lo necesites».',
+    'Acompáñalo/a sin obligar. No es un castigo: es un refugio.',
+  ]
+  return (
+    <div className="tool" style={{ textAlign: 'left' }}>
+      <h1 style={{ textAlign: 'center' }}>Rincón de la calma</h1>
+      <p className="tool-sub" style={{ textAlign: 'center' }}>Un espacio seguro en casa para que tu hijo/a regule sus emociones.</p>
+      <ol className="pasos">{items.map((t, k) => <li key={k}>{t}</li>)}</ol>
+      <p className="fuente" style={{ textAlign: 'center' }}>Rincón de la calma · psicología infantil / disciplina positiva</p>
+    </div>
+  )
+}
+
+// Guía: Frases de seguridad (qué decir y qué evitar con tu hijo/a).
+export function FrasesSeguridad() {
+  const decir = [
+    '«Estoy aquí contigo, estás a salvo».',
+    '«Es normal sentir miedo. A mí también me asustó».',
+    '«Yo te cuido. Vamos a estar bien».',
+    '«Si tiembla otra vez, ya sabemos qué hacer juntos».',
+  ]
+  const evitar = [
+    'No digas «no llores» ni «no pasó nada»: valida lo que siente.',
+    'No le des detalles ni cifras de víctimas.',
+    'Evita dejarlo/a frente a noticias o videos del sismo.',
+    'No prometas que «nunca va a temblar»: di que estás para cuidarlo/a.',
+  ]
+  return (
+    <div className="tool" style={{ textAlign: 'left' }}>
+      <h1 style={{ textAlign: 'center' }}>Frases que dan seguridad</h1>
+      <p className="tool-sub" style={{ textAlign: 'center' }}>Tus palabras y tu calma son su mayor refugio. Háblale a su altura, mirándolo/a a los ojos.</p>
+      <h3 className="bloque-title hacer"><Heart size={20} aria-hidden="true" /> Dile</h3>
+      <ul className="evitar" style={{ listStyle: 'none', paddingLeft: 0 }}>{decir.map((t, k) => <li key={k}>{t}</li>)}</ul>
+      <h3 className="bloque-title evitar-title"><Hand size={20} aria-hidden="true" /> Mejor evita</h3>
+      <ul className="evitar">{evitar.map((t, k) => <li key={k}>{t}</li>)}</ul>
+      <p className="fuente" style={{ textAlign: 'center' }}>Cómo hablar con niños tras una catástrofe · UNICEF / Save the Children</p>
     </div>
   )
 }

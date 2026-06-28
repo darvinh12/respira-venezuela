@@ -261,6 +261,63 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   box-shadow: 0 12px 34px rgba(199,93,74,.34);
 }
 .mariposa-heart { color: var(--terracota); opacity: .8; }
+
+/* Frasco de la calma */
+.frasco {
+  position: relative; width: 220px; height: 300px; margin: 14px auto 4px;
+  border-radius: 26px 26px 30px 30px;
+  background: linear-gradient(160deg, rgba(156,192,168,.22), rgba(46,107,126,.14));
+  border: 3px solid rgba(46,107,126,.25);
+  box-shadow: inset 0 0 30px rgba(255,255,255,.5), 0 12px 30px rgba(46,107,126,.18);
+  overflow: hidden;
+}
+.frasco canvas { display: block; width: 220px; height: 300px; }
+.frasco::before {
+  content: ''; position: absolute; top: 12px; left: 16px; width: 26px; height: 64%;
+  border-radius: 20px; background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+  pointer-events: none;
+}
+.frasco-tapa {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 96px; height: 18px; border-radius: 8px; background: var(--azul);
+  box-shadow: 0 3px 0 rgba(0,0,0,.08);
+}
+
+/* Respiración con peluche */
+.breath-circle.peluche {
+  background: radial-gradient(circle at 38% 30%, #ffe6a8, #f2b705);
+  font-size: 3.2rem;
+}
+
+/* Apaga la vela */
+.vela-wrap { height: 290px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 30px; }
+.vela { position: relative; width: 70px; display: flex; flex-direction: column; align-items: center; }
+.vela-cuerpo {
+  width: 54px; height: 150px; border-radius: 12px;
+  background: linear-gradient(90deg, #e7b9a6, #f6ddcf 45%, #e7b9a6);
+  box-shadow: inset -6px 0 10px rgba(0,0,0,.08);
+}
+.vela-flama {
+  width: 26px; height: 46px; margin-bottom: 4px;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 50% 75%, #fff3b0, #f2b705 45%, #e0662b 90%);
+  transform-origin: bottom center;
+  animation: flama-flicker 1.1s ease-in-out infinite;
+  box-shadow: 0 0 22px rgba(242,183,5,.7);
+}
+.vela-flama.soplando {
+  animation: none;
+  transform: rotate(24deg) scale(.55, .7);
+  opacity: .65;
+  transition: transform 1.2s ease, opacity 1.2s ease;
+}
+@keyframes flama-flicker {
+  0%, 100% { transform: rotate(-3deg) scale(1, 1); }
+  50% { transform: rotate(3deg) scale(.94, 1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vela-flama { animation: none; }
+}
 .ground-card {
   background: var(--blanco); border: 3px solid var(--azul);
   border-radius: 22px; padding: 28px 20px; margin: 14px 8px; box-shadow: var(--sombra);
