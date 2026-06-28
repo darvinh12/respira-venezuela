@@ -338,7 +338,7 @@ function Footer() {
   return (
     <footer className="creditos">
       © {new Date().getFullYear()} · Hecho por{' '}
-      <a href="https://instagram.com/gigrouplatam" target="_blank" rel="noreferrer">GI Group LATAM C.A.</a>
+      <a href="https://www.instagram.com/gigroupoficial/" target="_blank" rel="noreferrer">GI Group LATAM C.A.</a>
     </footer>
   )
 }
