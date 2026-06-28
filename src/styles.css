@@ -414,16 +414,26 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
 }
 .modal {
   background: var(--crema); width: 100%; max-width: 520px;
-  border-radius: 26px 26px 0 0; padding: 14px 18px 30px;
+  border-radius: 26px 26px 0 0; padding: 14px 18px max(18px, env(safe-area-inset-bottom));
   box-shadow: 0 -10px 40px rgba(0,0,0,.22); animation: up .26s ease;
+  max-height: 88vh; max-height: 88dvh; display: flex; flex-direction: column;
 }
-.modal-grip { width: 42px; height: 5px; border-radius: 3px; background: #d8cdba; margin: 0 auto 14px; }
+.modal-grip { width: 42px; height: 5px; border-radius: 3px; background: #d8cdba; margin: 0 auto 14px; flex: none; }
+.modal-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-height: 0; }
+.ver-todos {
+  width: 100%; margin: 6px 0 2px; padding: 12px; min-height: 48px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--azul); background: transparent; color: var(--azul-d);
+  border-radius: 14px; font-weight: 700; cursor: pointer;
+}
+.ver-todos:active { transform: scale(.99); }
 @keyframes up { from { transform: translateY(40px); opacity: .6; } to { transform: translateY(0); opacity: 1; } }
 .modal h2 { display: flex; align-items: center; gap: 8px; color: var(--terracota); margin-bottom: 8px; }
 .modal-sub { color: var(--gris); margin: 12px 0 8px; font-weight: 700; }
 .modal-close {
   width: 100%; margin-top: 12px; padding: 13px; border: 1px solid var(--linea);
   background: #fff; border-radius: 14px; font-weight: 700; cursor: pointer; color: var(--gris); min-height: 48px;
+  flex: none;
 }
 
 @media (min-width: 540px) {

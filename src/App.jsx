@@ -430,22 +430,27 @@ function Nav({ view, go, home }) {
 }
 
 function AyudaAhora({ onClose, go }) {
-  const psico = directorio[0].items
+  const psico = directorio[0].items.slice(0, 3) // líneas clave; el resto en el directorio
   return (
     <div className="modal-bg" onClick={onClose} role="dialog" aria-modal="true" aria-label="Ayuda inmediata">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-grip" aria-hidden="true" />
-        <h2><LifeBuoy size={22} aria-hidden="true" /> Ayuda ahora</h2>
-        <p>Si hay peligro para la vida, llama al <a className="tel inline" href="tel:171">171</a>.</p>
-        <p className="modal-sub">Si necesitas hablar con alguien:</p>
-        {psico.map((it) => (
-          <a key={it.nombre} className="tel block" href={`tel:${(it.tels[0] || '').replace(/[^0-9*]/g, '')}`}>
-            <Phone size={18} aria-hidden="true" /> {it.nombre} — {it.tels[0]}
-          </a>
-        ))}
-        <button className="accion-rapida" onClick={() => { onClose(); go({ name: 'tool', tool: 'respiracion' }) }}>
-          <Wind size={18} aria-hidden="true" /> O respira un minuto conmigo
-        </button>
+        <div className="modal-scroll">
+          <h2><LifeBuoy size={22} aria-hidden="true" /> Ayuda ahora</h2>
+          <p>Si hay peligro para la vida, llama al <a className="tel inline" href="tel:171">171</a>.</p>
+          <p className="modal-sub">Si necesitas hablar con alguien:</p>
+          {psico.map((it) => (
+            <a key={it.nombre} className="tel block" href={`tel:${(it.tels[0] || '').replace(/[^0-9*]/g, '')}`}>
+              <Phone size={18} aria-hidden="true" /> {it.nombre} — {it.tels[0]}
+            </a>
+          ))}
+          <button className="ver-todos" onClick={() => { onClose(); go({ name: 'directorio' }) }}>
+            Ver todos los números de ayuda <ArrowRight size={17} aria-hidden="true" />
+          </button>
+          <button className="accion-rapida" onClick={() => { onClose(); go({ name: 'tool', tool: 'respiracion' }) }}>
+            <Wind size={18} aria-hidden="true" /> O respira un minuto conmigo
+          </button>
+        </div>
         <button className="modal-close" onClick={onClose}>Cerrar</button>
       </div>
     </div>
