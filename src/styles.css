@@ -244,6 +244,23 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
 }
 .ciclos { color: var(--gris); margin-bottom: 10px; }
 .tool-actions { padding: 0 18px; }
+
+/* Abrazo de la mariposa */
+.mariposa-wrap {
+  height: 290px; display: flex; align-items: center; justify-content: center; gap: 14px;
+}
+.mariposa-pad {
+  width: 96px; height: 96px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #f0e7e2; color: var(--terracota);
+  transition: transform .35s ease, background .35s ease, box-shadow .35s ease;
+}
+.mariposa-pad.on {
+  background: radial-gradient(circle at 35% 30%, #e7a08e, var(--terracota));
+  color: #fff; transform: scale(1.18);
+  box-shadow: 0 12px 34px rgba(199,93,74,.34);
+}
+.mariposa-heart { color: var(--terracota); opacity: .8; }
 .ground-card {
   background: var(--blanco); border: 3px solid var(--azul);
   border-radius: 22px; padding: 28px 20px; margin: 14px 8px; box-shadow: var(--sombra);

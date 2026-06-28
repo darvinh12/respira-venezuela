@@ -3,10 +3,10 @@ import {
   Heart, Baby, Users, Siren, Wind, Activity, Moon, Home as HomeIcon, HeartCrack, CloudRain,
   CircleHelp, MessagesSquare, ToyBrick, HeartHandshake, Ear, CircleOff, Accessibility,
   LifeBuoy, MessageSquareWarning, Flame, Phone, Play, NotebookPen, House, ChevronRight,
-  ChevronLeft, X, Globe, ArrowRight, CheckCircle2, Hand, ExternalLink,
+  ChevronLeft, X, Globe, ArrowRight, CheckCircle2, Hand, ExternalLink, Square, Cloud,
 } from 'lucide-react'
 import { personas, situaciones, guias, directorio, videos } from './data.js'
-import { Respiracion, Grounding } from './Herramientas.jsx'
+import { Respiracion, Grounding, RespiracionCaja, Mariposa, Musculos, LugarSeguro } from './Herramientas.jsx'
 
 // Mapa de nombres (en data.js) a componentes de ícono Lucide
 const ICONS = {
@@ -190,6 +190,26 @@ function Calma({ go }) {
           <span className="card-title">Grounding 5-4-3-2-1</span>
           <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
         </button>
+        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'caja' })}>
+          <span className="chip chip-azul"><Square size={24} /></span>
+          <span className="card-title">Respiración en caja</span>
+          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
+        </button>
+        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'mariposa' })}>
+          <span className="chip chip-terracota"><Heart size={24} /></span>
+          <span className="card-title">Abrazo de la mariposa</span>
+          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
+        </button>
+        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'musculos' })}>
+          <span className="chip chip-amarillo"><Activity size={24} /></span>
+          <span className="card-title">Relajación muscular</span>
+          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
+        </button>
+        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'lugar' })}>
+          <span className="chip chip-verde"><Cloud size={24} /></span>
+          <span className="card-title">Tu lugar seguro</span>
+          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
+        </button>
       </div>
     </>
   )
@@ -198,6 +218,10 @@ function Calma({ go }) {
 function Tool({ tool }) {
   if (tool === 'respiracion') return <Respiracion />
   if (tool === 'grounding') return <Grounding />
+  if (tool === 'caja') return <RespiracionCaja />
+  if (tool === 'mariposa') return <Mariposa />
+  if (tool === 'musculos') return <Musculos />
+  if (tool === 'lugar') return <LugarSeguro />
   return null
 }
 
