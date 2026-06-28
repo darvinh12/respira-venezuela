@@ -69,7 +69,8 @@ function Header({ onHome, onBack }) {
         </button>
       ) : <span className="header-btn ghost" />}
       <button className="brand" onClick={onHome} aria-label="Ir al inicio de Respira">
-        <img className="brand-mark" src="/icon-192.png" alt="" aria-hidden="true" /> Respira <span className="brand-sub">Venezuela</span>
+        <img className="brand-mark" src="/icon-192.png" alt="" aria-hidden="true" />
+        <span className="brand-text">Respira <span className="brand-sub">Venezuela</span></span>
       </button>
       <span className="header-btn ghost" />
     </header>
