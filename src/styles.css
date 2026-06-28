@@ -69,9 +69,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   display: flex; align-items: center; gap: 7px;
 }
 .brand-mark {
-  width: 16px; height: 16px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, var(--amarillo-soft), var(--amarillo));
-  box-shadow: 0 0 0 4px rgba(224,169,62,.22); display: inline-block;
+  width: 28px; height: 28px; border-radius: 50%;
+  object-fit: contain; display: inline-block;
 }
 .brand-sub { font-family: 'Nunito'; font-weight: 600; color: var(--gris); font-size: .8rem; }
 .header-btn {
@@ -97,6 +96,10 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
 .chip-terracota { background: var(--chip-terracota-bg); color: var(--chip-terracota-fg); }
 
 /* ---------- Hero ---------- */
+.home-logo {
+  display: block; width: 200px; max-width: 62%; height: auto;
+  margin: 4px auto 14px;
+}
 .hero {
   background: linear-gradient(140deg, #357d92 0%, var(--azul) 55%, var(--azul-d) 100%);
   color: #fff; border-radius: 26px; padding: 28px 24px;

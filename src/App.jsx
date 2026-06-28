@@ -69,7 +69,7 @@ function Header({ onHome, onBack }) {
         </button>
       ) : <span className="header-btn ghost" />}
       <button className="brand" onClick={onHome} aria-label="Ir al inicio de Respira">
-        <span className="brand-mark" aria-hidden="true" /> Respira <span className="brand-sub">Venezuela</span>
+        <img className="brand-mark" src="/icon-192.png" alt="" aria-hidden="true" /> Respira <span className="brand-sub">Venezuela</span>
       </button>
       <span className="header-btn ghost" />
     </header>
@@ -79,6 +79,7 @@ function Header({ onHome, onBack }) {
 function Home({ go }) {
   return (
     <>
+      <img className="home-logo" src="/logo.png" alt="Respira Venezuela — Apoyo psicológico" />
       <section className="hero">
         <p className="hero-eyebrow">Estamos contigo</p>
         <h1>No estás solo/a.</h1>
