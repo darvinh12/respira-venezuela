@@ -20,6 +20,8 @@
   --gris: #5f6f74;
   --linea: #ece3d4;
   --blanco: #ffffff;
+  --gris-d: #47565c;
+  --text-scale: 1;
   --radio: 22px;
   --radio-sm: 16px;
   --sombra: 0 8px 24px rgba(46, 107, 126, 0.08);
@@ -34,6 +36,8 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
+/* Escala global de texto (control de accesibilidad en Ajustes). */
+html { font-size: calc(16px * var(--text-scale, 1)); }
 
 body {
   font-family: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -41,7 +45,7 @@ body {
   color: var(--tinta);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 h1, h2, h3, .brand { font-family: 'Lora', Georgia, serif; }
 
@@ -565,3 +569,42 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
   width: 30px; height: 30px; border-radius: 8px;
 }
 .reg-del:hover { color: var(--terracota); background: #fdf3f0; }
+
+/* ===== Añadidos: botón de ajustes, voz, lectura y tamaño de texto ===== */
+.header-btn.icon-only { min-width: 44px; justify-content: center; }
+
+/* Botones de voz (lectura en voz alta de ejercicios y guías) */
+.btn-voz, .btn-escuchar {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: fit-content; margin: 10px auto 0; padding: 10px 18px; min-height: 44px;
+  border: 1.5px solid var(--azul); background: var(--blanco); color: var(--azul-d);
+  border-radius: 999px; font-weight: 700; font-size: .92rem; cursor: pointer;
+  font-family: inherit;
+}
+.btn-voz.on, .btn-escuchar.on { background: var(--azul); color: #fff; border-color: var(--azul); }
+.btn-voz svg, .btn-escuchar svg { flex-shrink: 0; }
+.btn-voz:active, .btn-escuchar:active { transform: scale(.98); }
+.escuchar-row { display: flex; justify-content: center; margin: 8px 0 16px; }
+
+/* Ajustes: tamaño de texto */
+.ajustes-h2 { color: var(--azul-d); }
+.ajustes-nota { color: var(--gris-d); font-size: .92rem; }
+.text-size-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0 4px; }
+.text-size-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 72px; border: 2px solid var(--linea); background: var(--blanco);
+  border-radius: var(--radio-sm); cursor: pointer; color: var(--tinta);
+}
+.text-size-btn .text-size-a { font-weight: 800; line-height: 1; color: var(--azul-d); }
+.text-size-btn small { color: var(--gris-d); font-size: .82rem; }
+.text-size-btn.on { border-color: var(--azul); background: #e3f0f3; }
+
+/* Selector de voz de lectura */
+.selector-voz { margin-top: 20px; }
+.select-voz {
+  width: 100%; padding: 12px 14px; min-height: 48px; margin-bottom: 10px;
+  border: 1.5px solid var(--linea); border-radius: var(--radio-sm);
+  background: var(--blanco); color: var(--tinta);
+  font-size: 1rem; font-family: inherit;
+}
+.selector-voz .btn-escuchar { margin: 0 auto; }

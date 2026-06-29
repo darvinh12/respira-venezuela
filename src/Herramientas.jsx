@@ -3,12 +3,15 @@ import {
   Eye, Hand, Ear, Flower2, Citrus, Sparkles, Heart, Activity, Cloud, Flame, Home, HeartHandshake,
   CloudRain, Waves, Wind, Music2, Pause, Play, Volume2, Timer,
 } from 'lucide-react'
+import { hablar, callar, BotonVoz, BotonEscuchar } from './voz.jsx'
 
 // Componente de respiración animada reutilizable (acepta distintos patrones).
 function Breath({ titulo, sub, fases, fuente }) {
   const [i, setI] = useState(0)
-  const [activo, setActivo] = useState(true)
+  const [activo, setActivo] = useState(false) // arranca en pausa; el usuario inicia
+  const [iniciado, setIniciado] = useState(false)
   const [ciclos, setCiclos] = useState(0)
+  const [voz, setVoz] = useState(false)
   const timer = useRef(null)
 
   useEffect(() => {
@@ -23,7 +26,22 @@ function Breath({ titulo, sub, fases, fuente }) {
     return () => clearTimeout(timer.current)
   }, [i, activo, fases])
 
+  // Dice cada fase en voz alta para seguir el ritmo con los ojos cerrados.
+  useEffect(() => { if (voz && activo) hablar(fases[i].t) }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+
   const fase = fases[i]
+  const toggleVoz = () => setVoz((v) => {
+    const nv = !v
+    if (nv && activo) hablar(fase.t); else callar()
+    return nv
+  })
+  const toggleActivo = () => setActivo((a) => {
+    const na = !a
+    if (na) { setIniciado(true); if (voz) hablar(fases[i].t) } else callar()
+    return na
+  })
+
   return (
     <div className="tool">
       <h1>{titulo}</h1>
@@ -36,24 +54,15 @@ function Breath({ titulo, sub, fases, fuente }) {
             transitionDuration: `${activo ? fase.dur : 400}ms`,
           }}
         >
-          <span
-            className="breath-word"
-            role="status"
-            aria-live="polite"
-            style={{
-              transform: `scale(${activo ? (fase.w || 1) : 1})`,
-              transitionDuration: `${activo ? fase.dur : 400}ms`,
-            }}
-          >
-            {activo ? fase.t : 'Pausa'}
-          </span>
+          <span>{activo ? fase.t : (iniciado ? 'Pausa' : 'Empieza')}</span>
         </div>
       </div>
       <p className="ciclos">Ciclos completados: {ciclos}</p>
       <div className="tool-actions">
-        <button className="accion-rapida" onClick={() => setActivo((a) => !a)}>
-          {activo ? 'Pausar' : 'Continuar'}
+        <button className="accion-rapida" onClick={toggleActivo}>
+          {activo ? 'Pausar' : (iniciado ? 'Continuar' : 'Iniciar')}
         </button>
+        <BotonVoz activa={voz} onClick={toggleVoz} />
       </div>
       <p className="fuente">{fuente}</p>
     </div>
@@ -63,9 +72,9 @@ function Breath({ titulo, sub, fases, fuente }) {
 // Respiración diafragmática: inhala 4 · sostén 4 · exhala 6
 export function Respiracion() {
   const fases = [
-    { t: 'Inhala', dur: 4000, scale: 1.6, w: 1.18 },
-    { t: 'Sostén', dur: 4000, scale: 1.6, w: 1.18 },
-    { t: 'Exhala', dur: 6000, scale: 1.0, w: 0.85 },
+    { t: 'Inhala', dur: 4000, scale: 1.6 },
+    { t: 'Sostén', dur: 4000, scale: 1.6 },
+    { t: 'Exhala', dur: 6000, scale: 1.0 },
   ]
   return (
     <Breath
@@ -80,10 +89,10 @@ export function Respiracion() {
 // Respiración en caja 4-4-4-4 (usada por equipos de emergencia y rescate)
 export function RespiracionCaja() {
   const fases = [
-    { t: 'Inhala', dur: 4000, scale: 1.6, w: 1.18 },
-    { t: 'Sostén', dur: 4000, scale: 1.6, w: 1.18 },
-    { t: 'Exhala', dur: 4000, scale: 1.0, w: 0.85 },
-    { t: 'Sostén', dur: 4000, scale: 1.0, w: 0.85 },
+    { t: 'Inhala', dur: 4000, scale: 1.6 },
+    { t: 'Sostén', dur: 4000, scale: 1.6 },
+    { t: 'Exhala', dur: 4000, scale: 1.0 },
+    { t: 'Sostén', dur: 4000, scale: 1.0 },
   ]
   return (
     <Breath
@@ -105,7 +114,13 @@ export function Grounding() {
     { n: 1, sentido: 'cosa que puedes SABOREAR', Ic: Citrus, color: '#C75D4A' },
   ]
   const [paso, setPaso] = useState(0)
+  const [voz, setVoz] = useState(false)
   const fin = paso >= pasos.length
+  const frase = (p) => `${pasos[p].n} ${pasos[p].sentido}`
+
+  useEffect(() => { if (voz && !fin) hablar(frase(paso)) }, [paso]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+  const toggleVoz = () => setVoz((v) => { const nv = !v; if (nv && !fin) hablar(frase(paso)); else callar(); return nv })
 
   return (
     <div className="tool">
@@ -117,8 +132,8 @@ export function Grounding() {
           <span className="ground-icon" style={{ color: pasos[paso].color }}>
             {(() => { const I = pasos[paso].Ic; return <I size={46} aria-hidden="true" /> })()}
           </span>
-          <div className="ground-num" style={{ color: pasos[paso].color }} aria-hidden="true">{pasos[paso].n}</div>
-          <div className="ground-text" role="status" aria-live="polite" aria-label={`${pasos[paso].n} ${pasos[paso].sentido}`}>{pasos[paso].sentido}</div>
+          <div className="ground-num" style={{ color: pasos[paso].color }}>{pasos[paso].n}</div>
+          <div className="ground-text">{pasos[paso].sentido}</div>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
             Listo, siguiente →
           </button>
@@ -131,6 +146,7 @@ export function Grounding() {
           <button className="accion-rapida" onClick={() => setPaso(0)}>Repetir</button>
         </div>
       )}
+      <div className="tool-actions">{!fin && <BotonVoz activa={voz} onClick={toggleVoz} />}</div>
       <p className="fuente">Técnica de anclaje (grounding) · Apoyo psicosocial IFRC</p>
     </div>
   )
@@ -140,7 +156,8 @@ export function Grounding() {
 // Recomendado por IFRC/UNICEF para sobrevivientes de desastres (incluye niños).
 export function Mariposa() {
   const [lado, setLado] = useState('izq')
-  const [activo, setActivo] = useState(true)
+  const [activo, setActivo] = useState(false)
+  const [iniciado, setIniciado] = useState(false)
   const [taps, setTaps] = useState(0)
   const timer = useRef(null)
 
@@ -152,6 +169,8 @@ export function Mariposa() {
     }, 850)
     return () => clearTimeout(timer.current)
   }, [lado, activo])
+
+  const toggleActivo = () => setActivo((a) => { if (!a) setIniciado(true); return !a })
 
   return (
     <div className="tool">
@@ -169,10 +188,10 @@ export function Mariposa() {
           <Hand size={40} aria-hidden="true" />
         </span>
       </div>
-      <p className="ciclos">{activo ? (lado === 'izq' ? '◀ Toca a la izquierda' : 'Toca a la derecha ▶') : 'En pausa'} · {taps} golpecitos</p>
+      <p className="ciclos">{activo ? (lado === 'izq' ? '◀ Toca a la izquierda' : 'Toca a la derecha ▶') : (iniciado ? 'En pausa' : 'Toca Iniciar para empezar')} · {taps} golpecitos</p>
       <div className="tool-actions">
-        <button className="accion-rapida" onClick={() => setActivo((a) => !a)}>
-          {activo ? 'Pausar' : 'Continuar'}
+        <button className="accion-rapida" onClick={toggleActivo}>
+          {activo ? 'Pausar' : (iniciado ? 'Continuar' : 'Iniciar')}
         </button>
       </div>
       <p className="fuente">Abrazo de la mariposa (EMDR) · IFRC / UNICEF</p>
@@ -190,7 +209,13 @@ export function Musculos() {
     { zona: 'Piernas y pies', accion: 'Estira las piernas y apunta los dedos hacia ti.' },
   ]
   const [paso, setPaso] = useState(0)
+  const [voz, setVoz] = useState(false)
   const fin = paso >= grupos.length
+  const frase = (p) => `${grupos[p].zona}. ${grupos[p].accion} Tensa cinco segundos y suelta diez.`
+
+  useEffect(() => { if (voz && !fin) hablar(frase(paso)) }, [paso]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+  const toggleVoz = () => setVoz((v) => { const nv = !v; if (nv && !fin) hablar(frase(paso)); else callar(); return nv })
 
   return (
     <div className="tool">
@@ -200,7 +225,7 @@ export function Musculos() {
       {!fin ? (
         <div className="ground-card" style={{ borderColor: '#2E6B7E' }}>
           <span className="ground-icon" style={{ color: '#2E6B7E' }}><Activity size={44} aria-hidden="true" /></span>
-          <div className="ground-text" style={{ marginBottom: 6 }} role="status" aria-live="polite">{grupos[paso].zona}</div>
+          <div className="ground-text" style={{ marginBottom: 6 }}>{grupos[paso].zona}</div>
           <p className="tool-sub" style={{ margin: '0 8px 14px' }}>{grupos[paso].accion}<br />Tensa 5 s… y suelta 10 s.</p>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
             Hecho, siguiente →
@@ -214,6 +239,7 @@ export function Musculos() {
           <button className="accion-rapida" onClick={() => setPaso(0)}>Repetir</button>
         </div>
       )}
+      <div className="tool-actions">{!fin && <BotonVoz activa={voz} onClick={toggleVoz} />}</div>
       <p className="fuente">Relajación muscular progresiva (Jacobson) · APA</p>
     </div>
   )
@@ -230,7 +256,12 @@ export function LugarSeguro() {
     'Quédate unos segundos más. Este lugar es tuyo: vuelve cuando lo necesites.',
   ]
   const [paso, setPaso] = useState(0)
+  const [voz, setVoz] = useState(false)
   const fin = paso >= pasos.length
+
+  useEffect(() => { if (voz && !fin) hablar(pasos[paso]) }, [paso]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+  const toggleVoz = () => setVoz((v) => { const nv = !v; if (nv && !fin) hablar(pasos[paso]); else callar(); return nv })
 
   return (
     <div className="tool">
@@ -240,7 +271,7 @@ export function LugarSeguro() {
       {!fin ? (
         <div className="ground-card" style={{ borderColor: '#7FA88B' }}>
           <span className="ground-icon" style={{ color: '#7FA88B' }}><Cloud size={44} aria-hidden="true" /></span>
-          <div className="ground-text" style={{ fontSize: '1.08rem' }} role="status" aria-live="polite">{pasos[paso]}</div>
+          <div className="ground-text" style={{ fontSize: '1.08rem' }}>{pasos[paso]}</div>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
             {paso === pasos.length - 1 ? 'Terminar' : 'Continuar →'}
           </button>
@@ -253,8 +284,107 @@ export function LugarSeguro() {
           <button className="accion-rapida" onClick={() => setPaso(0)}>Repetir</button>
         </div>
       )}
+      <div className="tool-actions">{!fin && <BotonVoz activa={voz} onClick={toggleVoz} />}</div>
       <p className="fuente">Visualización del lugar seguro · Primeros auxilios psicológicos OMS</p>
     </div>
+  )
+}
+
+/* ============ Ejercicios de aterrizaje (somáticos / polivagal) ============ */
+
+// Componente de pasos reutilizable (con voz y progreso), para ejercicios guiados.
+function EjercicioPasos({ titulo, sub, pasos, cierre, fuente, color = '#2E6B7E', Icono = Activity }) {
+  const [paso, setPaso] = useState(0)
+  const [voz, setVoz] = useState(false)
+  const fin = paso >= pasos.length
+
+  useEffect(() => { if (voz && !fin) hablar(pasos[paso]) }, [paso]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+  const toggleVoz = () => setVoz((v) => { const nv = !v; if (nv && !fin) hablar(pasos[paso]); else callar(); return nv })
+
+  return (
+    <div className="tool">
+      <h1>{titulo}</h1>
+      <p className="tool-sub">{sub}</p>
+      {!fin ? (
+        <div className="ground-card" style={{ borderColor: color }}>
+          <span className="ground-icon" style={{ color }}><Icono size={44} aria-hidden="true" /></span>
+          <div className="ground-text" style={{ fontSize: '1.08rem' }}>{pasos[paso]}</div>
+          <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
+            {paso === pasos.length - 1 ? 'Terminar' : 'Continuar →'}
+          </button>
+          <div className="ground-progress">{paso + 1} de {pasos.length}</div>
+        </div>
+      ) : (
+        <div className="ground-card done">
+          <span className="ground-icon" style={{ color: '#7FA88B' }}><Sparkles size={46} aria-hidden="true" /></span>
+          <div className="ground-text">{cierre}</div>
+          <button className="accion-rapida" onClick={() => setPaso(0)}>Repetir</button>
+        </div>
+      )}
+      <div className="tool-actions">{!fin && <BotonVoz activa={voz} onClick={toggleVoz} />}</div>
+      <p className="fuente">{fuente}</p>
+    </div>
+  )
+}
+
+// Suspiro inducido (suspiro fisiológico): dos tomas de aire y una exhalación larga con sonido.
+export function Suspiro() {
+  const fases = [
+    { t: 'Toma aire', dur: 3000, scale: 1.45 },
+    { t: 'Un poco más', dur: 1600, scale: 1.7 },
+    { t: 'Suelta… aaah', dur: 6000, scale: 1.0 },
+  ]
+  return (
+    <Breath
+      titulo="Suspiro inducido"
+      sub="Para cuando la activación sobrepasa lo incómodo. Toma aire dos veces seguidas y suéltalo por la boca con un sonido, como cuando terminas de llorar y el cuerpo respira solo. Mueve los brazos y las piernas para que se sienta más natural."
+      fases={fases}
+      fuente="Suspiro fisiológico · regulación del sistema nervioso"
+    />
+  )
+}
+
+// Empujar la pared: completar la respuesta de defensa, descargar energía que abruma.
+export function EmpujarPared() {
+  return (
+    <EjercicioPasos
+      titulo="Empujar la pared"
+      sub="Para descargar la energía que abruma: frustración, enojo o esa sensación de flotar en la nada. Empujar te recuerda tus límites y te ancla. No juzgues cómo reacciona tu cuerpo: así aprendió a defenderse."
+      color="#C75D4A"
+      Icono={Hand}
+      pasos={[
+        'Ponte frente a una pared, con un pie detrás del otro para sentirte firme y estable.',
+        'Apoya las manos en la pared con los codos un poco flexionados.',
+        'Conecta con lo que sientes y empieza a empujar la pared muy despacio, con fuerza.',
+        'Hazlo lento a propósito: le dices a tu cuerpo que ya puede soltar esa energía, que la vida ya no depende de esa reacción.',
+        'Despega las manos poco a poco y nota cómo se siente tu cuerpo, antes y después.',
+        'Termina con un suspiro grande, soltando el aire por la boca con todo el cuerpo.',
+      ]}
+      cierre="Esa tensión encontró su salida. Respira y quédate con la sensación de tu cuerpo más suelto."
+      fuente="Completar la respuesta de defensa · enfoque somático / polivagal"
+    />
+  )
+}
+
+// Empujar a otra persona: co-regulación con contacto y mirada (vago ventral).
+export function EmpujarPersona() {
+  return (
+    <EjercicioPasos
+      titulo="Empujar con otra persona"
+      sub="Igual que empujar la pared, pero con alguien de confianza. El contacto y sostener la mirada activan el nervio vago ventral, que calma. No busques entender la reacción del cuerpo: solo deja que salga."
+      color="#2E6B7E"
+      Icono={HeartHandshake}
+      pasos={[
+        'Busca a alguien de confianza. Una persona empuja con las manos y la otra recibe firme.',
+        'Mantengan la mirada mientras empujan, sin apuro.',
+        'Empuja despacio, dejando salir la tensión que el cuerpo guardó.',
+        'Cuando hayas sacado todo, suelta la fuerza poco a poco.',
+        'Quédense un momento juntos, respirando y sosteniendo la mirada.',
+      ]}
+      cierre="El cuerpo soltó lo que guardaba y tu sistema nervioso encontró calma en el otro. Respira."
+      fuente="Co-regulación y respuesta de defensa · enfoque somático / polivagal"
+    />
   )
 }
 
@@ -354,7 +484,9 @@ export function RespiracionPeluche() {
     { t: 'Baja despacito', dur: 6000, scale: 1.0 },
   ]
   const [i, setI] = useState(0)
-  const [activo, setActivo] = useState(true)
+  const [activo, setActivo] = useState(false)
+  const [iniciado, setIniciado] = useState(false)
+  const [voz, setVoz] = useState(false)
   const timer = useRef(null)
 
   useEffect(() => {
@@ -363,7 +495,17 @@ export function RespiracionPeluche() {
     return () => clearTimeout(timer.current)
   }, [i, activo])
 
+  useEffect(() => { if (voz && activo) hablar(fases[i].t) }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+
   const fase = fases[i]
+  const toggleVoz = () => setVoz((v) => { const nv = !v; if (nv && activo) hablar(fase.t); else callar(); return nv })
+  const toggleActivo = () => setActivo((a) => {
+    const na = !a
+    if (na) { setIniciado(true); if (voz) hablar(fases[i].t) } else callar()
+    return na
+  })
+
   return (
     <div className="tool">
       <h1>Respira con tu peluche</h1>
@@ -376,9 +518,10 @@ export function RespiracionPeluche() {
           <span role="img" aria-label="peluche">🧸</span>
         </div>
       </div>
-      <p className="ciclos">{activo ? fase.t : 'Pausa'}</p>
+      <p className="ciclos">{activo ? fase.t : (iniciado ? 'Pausa' : 'Toca Iniciar')}</p>
       <div className="tool-actions">
-        <button className="accion-rapida" onClick={() => setActivo((a) => !a)}>{activo ? 'Pausar' : 'Continuar'}</button>
+        <button className="accion-rapida" onClick={toggleActivo}>{activo ? 'Pausar' : (iniciado ? 'Continuar' : 'Iniciar')}</button>
+        <BotonVoz activa={voz} onClick={toggleVoz} />
       </div>
       <p className="fuente">Respiración con peluche (belly breathing) · UNICEF / Save the Children</p>
     </div>
@@ -392,7 +535,9 @@ export function SoplarVela() {
     { t: 'Sopla la vela despacito', dur: 5000, soplando: true },
   ]
   const [i, setI] = useState(0)
-  const [activo, setActivo] = useState(true)
+  const [activo, setActivo] = useState(false)
+  const [iniciado, setIniciado] = useState(false)
+  const [voz, setVoz] = useState(false)
   const timer = useRef(null)
 
   useEffect(() => {
@@ -401,7 +546,17 @@ export function SoplarVela() {
     return () => clearTimeout(timer.current)
   }, [i, activo])
 
+  useEffect(() => { if (voz && activo) hablar(fases[i].t) }, [i]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => callar(), [])
+
   const fase = fases[i]
+  const toggleVoz = () => setVoz((v) => { const nv = !v; if (nv && activo) hablar(fase.t); else callar(); return nv })
+  const toggleActivo = () => setActivo((a) => {
+    const na = !a
+    if (na) { setIniciado(true); if (voz) hablar(fases[i].t) } else callar()
+    return na
+  })
+
   return (
     <div className="tool">
       <h1>Apaga la vela</h1>
@@ -412,9 +567,10 @@ export function SoplarVela() {
           <span className="vela-cuerpo" aria-hidden="true" />
         </div>
       </div>
-      <p className="ciclos">{activo ? fase.t : 'Pausa'}</p>
+      <p className="ciclos">{activo ? fase.t : (iniciado ? 'Pausa' : 'Toca Iniciar')}</p>
       <div className="tool-actions">
-        <button className="accion-rapida" onClick={() => setActivo((a) => !a)}>{activo ? 'Pausar' : 'Continuar'}</button>
+        <button className="accion-rapida" onClick={toggleActivo}>{activo ? 'Pausar' : (iniciado ? 'Continuar' : 'Iniciar')}</button>
+        <BotonVoz activa={voz} onClick={toggleVoz} />
       </div>
       <p className="fuente">Respiración «huele la flor, sopla la vela» · Child Mind Institute</p>
     </div>
@@ -435,6 +591,7 @@ export function RinconCalma() {
     <div className="tool" style={{ textAlign: 'left' }}>
       <h1 style={{ textAlign: 'center' }}>Rincón de la calma</h1>
       <p className="tool-sub" style={{ textAlign: 'center' }}>Un espacio seguro en casa para que tu hijo/a regule sus emociones.</p>
+      <div className="escuchar-row"><BotonEscuchar texto={items.join(' ')} etiqueta="Escuchar los pasos" /></div>
       <ol className="pasos">{items.map((t, k) => <li key={k}>{t}</li>)}</ol>
       <p className="fuente" style={{ textAlign: 'center' }}>Rincón de la calma · psicología infantil / disciplina positiva</p>
     </div>
@@ -459,6 +616,7 @@ export function FrasesSeguridad() {
     <div className="tool" style={{ textAlign: 'left' }}>
       <h1 style={{ textAlign: 'center' }}>Frases que dan seguridad</h1>
       <p className="tool-sub" style={{ textAlign: 'center' }}>Tus palabras y tu calma son su mayor refugio. Háblale a su altura, mirándolo/a a los ojos.</p>
+      <div className="escuchar-row"><BotonEscuchar texto={'Dile: ' + decir.join(' ') + ' Mejor evita: ' + evitar.join(' ')} etiqueta="Escuchar las frases" /></div>
       <h3 className="bloque-title hacer"><Heart size={20} aria-hidden="true" /> Dile</h3>
       <ul className="decir">{decir.map((t, k) => <li key={k}>{t}</li>)}</ul>
       <h3 className="bloque-title evitar-title"><Hand size={20} aria-hidden="true" /> Mejor evita</h3>

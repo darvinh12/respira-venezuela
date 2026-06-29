@@ -4,13 +4,15 @@ import {
   CircleHelp, MessagesSquare, ToyBrick, HeartHandshake, Ear, CircleOff, Accessibility,
   LifeBuoy, MessageSquareWarning, Flame, Phone, Play, NotebookPen, House, ChevronRight,
   ChevronLeft, X, Globe, ArrowRight, CheckCircle2, Hand, ExternalLink, Square, Cloud, Sparkles,
-  Share2, Download, Trash2, Music, BookOpen, Palette, Pencil, Box, Sprout, Star, ListChecks,
+  Share2, Download, Trash2, Music, BookOpen, Palette, Pencil, Box, Sprout, Star, ListChecks, Settings2,
 } from 'lucide-react'
 import { personas, situaciones, guias, directorio, videos, actividades } from './data.js'
 import {
   Respiracion, Grounding, RespiracionCaja, Mariposa, Musculos, LugarSeguro,
   FrascoCalma, RespiracionPeluche, SoplarVela, RinconCalma, FrasesSeguridad, Sonidos,
+  Suspiro, EmpujarPared, EmpujarPersona,
 } from './Herramientas.jsx'
+import { BotonEscuchar, SelectorVoz } from './voz.jsx'
 
 // Datos para compartir la app (Web Share API).
 const SHARE_DATA = {
@@ -34,8 +36,10 @@ function Icon({ name, size = 24, ...rest }) {
 export default function App() {
   const [view, setView] = useState({ name: 'home' })
   const [ayuda, setAyuda] = useState(false)
+  const [ajustes, setAjustes] = useState(false)
   const [historia, setHistoria] = useState([])
   const [installEvt, setInstallEvt] = useState(null)
+  const [textScale, setTextScale] = useTextScale()
 
   // Captura el evento de instalación (PWA) para ofrecer "Instalar app".
   useEffect(() => {
@@ -69,7 +73,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header onHome={home} onBack={view.name !== 'home' ? back : null} />
+      <Header onHome={home} onBack={view.name !== 'home' ? back : null} onAjustes={() => setAjustes(true)} />
       <main className="main">
         {view.name === 'home' && <Home go={go} installEvt={installEvt} instalar={instalar} />}
         {view.name === 'persona' && <Persona personaId={view.personaId} go={go} />}
@@ -89,11 +93,70 @@ export default function App() {
 
       <Nav view={view} go={go} home={home} />
       {ayuda && <AyudaAhora onClose={() => setAyuda(false)} go={go} />}
+      {ajustes && <Ajustes onClose={() => setAjustes(false)} textScale={textScale} setTextScale={setTextScale} />}
     </div>
   )
 }
 
-function Header({ onHome, onBack }) {
+// Tamaño de texto accesible: escala global persistida, aplicada a la raíz.
+const ESCALAS_TEXTO = [
+  { v: 1, n: 'Normal' },
+  { v: 1.15, n: 'Grande' },
+  { v: 1.3, n: 'Más grande' },
+]
+function useTextScale() {
+  const [scale, setScale] = useState(() => {
+    try { return Number(localStorage.getItem('respira_text_scale')) || 1 } catch { return 1 }
+  })
+  useEffect(() => {
+    document.documentElement.style.setProperty('--text-scale', String(scale))
+    try { localStorage.setItem('respira_text_scale', String(scale)) } catch { /* ignore */ }
+  }, [scale])
+  return [scale, setScale]
+}
+
+function Ajustes({ onClose, textScale, setTextScale }) {
+  const panelRef = useRef(null)
+  useEffect(() => {
+    const prev = document.activeElement
+    panelRef.current?.focus()
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      if (prev && typeof prev.focus === 'function') prev.focus()
+    }
+  }, [onClose])
+
+  return (
+    <div className="modal-bg" onClick={onClose} role="dialog" aria-modal="true" aria-label="Ajustes">
+      <div className="modal" onClick={(e) => e.stopPropagation()} ref={panelRef} tabIndex={-1}>
+        <div className="modal-grip" aria-hidden="true" />
+        <div className="modal-scroll">
+          <h2 className="ajustes-h2"><Settings2 size={22} aria-hidden="true" /> Ajustes</h2>
+          <p className="modal-sub">Tamaño del texto</p>
+          <div className="text-size-row" role="group" aria-label="Tamaño del texto">
+            {ESCALAS_TEXTO.map((o) => (
+              <button
+                key={o.n}
+                className={'text-size-btn' + (textScale === o.v ? ' on' : '')}
+                onClick={() => setTextScale(o.v)}
+                aria-pressed={textScale === o.v}
+              >
+                <span className="text-size-a" style={{ fontSize: `calc(1rem * ${o.v})` }} aria-hidden="true">A</span>
+                <small>{o.n}</small>
+              </button>
+            ))}
+          </div>
+          <SelectorVoz />
+        </div>
+        <button className="modal-close" onClick={onClose}>Cerrar</button>
+      </div>
+    </div>
+  )
+}
+
+function Header({ onHome, onBack, onAjustes }) {
   return (
     <header className="header">
       {onBack ? (
@@ -105,7 +168,9 @@ function Header({ onHome, onBack }) {
         <img className="brand-mark" src="/icon-192.png" alt="" aria-hidden="true" />
         <span className="brand-text">Respira <span className="brand-sub">Venezuela</span></span>
       </button>
-      <span className="header-btn ghost" />
+      <button className="header-btn icon-only" onClick={onAjustes} aria-label="Ajustes de accesibilidad">
+        <Settings2 size={21} aria-hidden="true" />
+      </button>
     </header>
   )
 }
@@ -247,10 +312,12 @@ function Persona({ personaId, go }) {
 function Guia({ guiaId, accion }) {
   const g = guias[guiaId]
   if (!g) return <p>Contenido no disponible.</p>
+  const textoVoz = `${g.titulo}. ${g.intro} Qué puedes hacer: ${g.pasos.join(' ')} Mejor evita: ${g.evitar.join(' ')} ¿Cuándo buscar ayuda profesional? ${g.cuandoBuscar}`
   return (
     <article className="guia">
       <h1>{g.titulo}</h1>
       <p className="guia-intro">{g.intro}</p>
+      <div className="escuchar-row"><BotonEscuchar texto={textoVoz} etiqueta="Escuchar esta guía" /></div>
 
       {g.accionRapida && (
         <button className="accion-rapida" onClick={() => accion(g.accionRapida.tool)}>
@@ -274,50 +341,56 @@ function Guia({ guiaId, accion }) {
   )
 }
 
+function ToolCard({ go, tool, color, Ic, titulo, desc }) {
+  return (
+    <button className="card sit-card" onClick={() => go({ name: 'tool', tool })}>
+      <span className={`chip chip-${color}`}><Ic size={24} /></span>
+      <span className="card-body">
+        <span className="card-title">{titulo}</span>
+        <span className="card-desc">{desc}</span>
+      </span>
+      <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
+    </button>
+  )
+}
+
 function Calma({ go }) {
   return (
     <>
       <section className="persona-head">
         <span className="chip big chip-azul"><Wind size={34} /></span>
         <h1>Calma ya</h1>
-        <p>Herramientas rápidas para bajar la angustia en este momento.</p>
+        <p>Toca la que necesites. Cada una te dice para qué sirve y te guía paso a paso.</p>
       </section>
+
+      <h2 className="section-title">Respirar</h2>
+      <p className="section-hint">Para bajar la angustia con el aire.</p>
       <div className="cards">
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'respiracion' })}>
-          <span className="chip chip-azul"><Wind size={24} /></span>
-          <span className="card-title">Respiración guiada</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'grounding' })}>
-          <span className="chip chip-verde"><Hand size={24} /></span>
-          <span className="card-title">Grounding 5-4-3-2-1</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'caja' })}>
-          <span className="chip chip-azul"><Square size={24} /></span>
-          <span className="card-title">Respiración en caja</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'mariposa' })}>
-          <span className="chip chip-terracota"><Heart size={24} /></span>
-          <span className="card-title">Abrazo de la mariposa</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'musculos' })}>
-          <span className="chip chip-amarillo"><Activity size={24} /></span>
-          <span className="card-title">Relajación muscular</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'lugar' })}>
-          <span className="chip chip-verde"><Cloud size={24} /></span>
-          <span className="card-title">Tu lugar seguro</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
-        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'sonidos' })}>
-          <span className="chip chip-azul"><Music size={24} /></span>
-          <span className="card-title">Sonidos para calmar</span>
-          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
-        </button>
+        <ToolCard go={go} tool="respiracion" color="azul" Ic={Wind} titulo="Respiración guiada" desc="Baja la angustia con el ritmo del aire" />
+        <ToolCard go={go} tool="caja" color="azul" Ic={Square} titulo="Respiración en caja" desc="Calma firme, la que usan los rescatistas" />
+        <ToolCard go={go} tool="suspiro" color="terracota" Ic={Wind} titulo="Suspiro inducido" desc="Cuando la angustia se pasa del límite" />
+      </div>
+
+      <h2 className="section-title">Anclar el cuerpo</h2>
+      <p className="section-hint">Para volver al aquí y ahora.</p>
+      <div className="cards">
+        <ToolCard go={go} tool="grounding" color="verde" Ic={Hand} titulo="Grounding 5-4-3-2-1" desc="Vuelve al presente usando tus sentidos" />
+        <ToolCard go={go} tool="mariposa" color="terracota" Ic={Heart} titulo="Abrazo de la mariposa" desc="Golpecitos suaves que tranquilizan" />
+        <ToolCard go={go} tool="musculos" color="amarillo" Ic={Activity} titulo="Relajación muscular" desc="Suelta la tensión zona por zona" />
+        <ToolCard go={go} tool="lugar" color="verde" Ic={Cloud} titulo="Tu lugar seguro" desc="Imagina un sitio donde estás a salvo" />
+      </div>
+
+      <h2 className="section-title">Descargar la tensión</h2>
+      <p className="section-hint">Para cuando la activación sobrepasa lo incómodo y te vas a los bordes. No hay forma buena ni mala de hacerlo.</p>
+      <div className="cards">
+        <ToolCard go={go} tool="empujar-pared" color="terracota" Ic={Hand} titulo="Empujar la pared" desc="Saca la energía que te abruma" />
+        <ToolCard go={go} tool="empujar-persona" color="verde" Ic={HeartHandshake} titulo="Empujar con otra persona" desc="Descarga la tensión acompañado" />
+      </div>
+
+      <h2 className="section-title">Acompañarte</h2>
+      <p className="section-hint">Sonido de fondo para relajarte o dormir.</p>
+      <div className="cards">
+        <ToolCard go={go} tool="sonidos" color="azul" Ic={Music} titulo="Sonidos para calmar" desc="Lluvia, olas o viento, sin internet" />
       </div>
     </>
   )
@@ -330,6 +403,9 @@ function Tool({ tool }) {
   if (tool === 'mariposa') return <Mariposa />
   if (tool === 'musculos') return <Musculos />
   if (tool === 'lugar') return <LugarSeguro />
+  if (tool === 'suspiro') return <Suspiro />
+  if (tool === 'empujar-pared') return <EmpujarPared />
+  if (tool === 'empujar-persona') return <EmpujarPersona />
   if (tool === 'frasco') return <FrascoCalma />
   if (tool === 'peluche') return <RespiracionPeluche />
   if (tool === 'vela') return <SoplarVela />
