@@ -18,7 +18,7 @@ import { BotonEscuchar, SelectorVoz } from './voz.jsx'
 const SHARE_DATA = {
   title: 'Respira Venezuela',
   text: 'Apoyo psicológico gratuito tras el terremoto: guías paso a paso, ejercicios de calma y números de ayuda verificados.',
-  url: 'https://respira-venezuela.pages.dev/',
+  url: 'https://respira-ve.pages.dev/',
 }
 
 // Mapa de nombres (en data.js) a componentes de ícono Lucide
