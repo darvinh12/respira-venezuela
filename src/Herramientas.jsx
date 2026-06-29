@@ -46,6 +46,7 @@ function Breath({ titulo, sub, fases, fuente }) {
     <div className="tool">
       <h1>{titulo}</h1>
       <p className="tool-sub">{sub}</p>
+      <p className="tool-tip">Para relajarte más: activa la voz, cierra los ojos y repítelo las veces que necesites, hasta sentirte tranquilo/a.</p>
       <div className="breath-wrap">
         <div
           className="breath-circle"
@@ -79,7 +80,7 @@ export function Respiracion() {
   return (
     <Breath
       titulo="Respiración guiada"
-      sub="Sigue el círculo. Inhala por la nariz, exhala despacio por la boca."
+      sub="Pon una mano en el pecho y otra en la barriga, y respira con el abdomen (el diafragma): debe moverse la mano de la barriga, no la del pecho. Inhala por la nariz, exhala despacio por la boca."
       fases={fases}
       fuente="Técnica de respiración diafragmática · OMS / OPS"
     />

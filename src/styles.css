@@ -250,6 +250,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
 .tool { text-align: center; padding-top: 6px; }
 .tool h1 { color: var(--azul-d); font-size: 1.5rem; }
 .tool-sub { color: var(--gris); margin: 8px 18px 12px; }
+.tool-tip {
+  color: var(--azul-d); background: #eef5f6; border: 1px solid #cfe2e7;
+  border-radius: var(--radio-sm); padding: 10px 14px; margin: 0 14px 14px;
+  font-size: .92rem; font-weight: 600;
+}
 .breath-wrap { height: 290px; display: flex; align-items: center; justify-content: center; }
 .breath-circle {
   width: 150px; height: 150px; border-radius: 50%;

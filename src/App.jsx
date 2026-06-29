@@ -17,7 +17,7 @@ import { BotonEscuchar, SelectorVoz } from './voz.jsx'
 // Datos para compartir la app (Web Share API).
 const SHARE_DATA = {
   title: 'Respira Venezuela',
-  text: 'Apoyo psicológico gratuito tras el terremoto: guías paso a paso, ejercicios de calma y números de ayuda verificados.',
+  text: 'Estrategias gratuitas para regularte y calmar la angustia en momentos de crisis tras el terremoto: guías, ejercicios de calma y números de ayuda.',
   url: 'https://respira-ve.pages.dev/',
 }
 
@@ -178,11 +178,11 @@ function Header({ onHome, onBack, onAjustes }) {
 function Home({ go, installEvt, instalar }) {
   return (
     <>
-      <img className="home-logo" src="/logo.png" alt="Respira Venezuela — Apoyo psicológico" />
+      <img className="home-logo" src="/logo.png" alt="Respira Venezuela" />
       <section className="hero">
         <p className="hero-eyebrow">Estamos contigo</p>
         <h1>No estás solo/a.</h1>
-        <p className="hero-text">Apoyo psicológico para después del terremoto. Respira. Vamos paso a paso.</p>
+        <p className="hero-text">Estrategias para calmarte y regular tu cuerpo en los momentos de crisis después del terremoto. Respira, vamos paso a paso.</p>
       </section>
 
       <h2 className="section-title">¿Quién busca apoyo?</h2>
@@ -507,7 +507,7 @@ function textoNumeros() {
 }
 
 function textoGuiaBolsillo() {
-  let out = 'GUÍA DE BOLSILLO · Respira Venezuela\nApoyo psicológico tras el terremoto\n\n'
+  let out = 'GUÍA DE BOLSILLO · Respira Venezuela\nEstrategias para regularte en momentos de crisis\n\n'
   out += '========================\nNÚMEROS DE AYUDA\n========================\n\n'
   directorio.forEach((b) => {
     out += `— ${b.grupo} —\n`
