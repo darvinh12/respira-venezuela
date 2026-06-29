@@ -374,8 +374,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
 .barra { flex: 1; border-radius: 6px 6px 0 0; min-height: 6px; }
 .registros { list-style: none; }
 .registros li {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  padding: 11px 13px; background: var(--blanco); border: 1px solid var(--linea);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; position: relative;
+  padding: 11px 42px 11px 13px; background: var(--blanco); border: 1px solid var(--linea);
   border-radius: 13px; margin-bottom: 7px; font-size: .92rem;
 }
 .reg-emo { font-size: 1.35rem; }
@@ -454,3 +454,114 @@ button:focus-visible, a:focus-visible, textarea:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* ============ Aportes nuevos: compartir, actividades, sonidos, diario ============ */
+/* ---------- Compartir / Instalar ---------- */
+.compartir {
+  margin: 22px 2px 6px; padding: 18px 16px;
+  background: linear-gradient(140deg, #eef5f6 0%, #e7f1e9 100%);
+  border: 1px solid #d4e6ea; border-radius: var(--radio);
+  text-align: center;
+}
+.compartir-msg { color: var(--azul-d); font-weight: 700; margin-bottom: 12px; font-family: 'Nunito'; }
+.compartir-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.compartir-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--verde); color: #fff; border: none; border-radius: 999px;
+  padding: 13px 20px; font-size: .98rem; font-weight: 800; cursor: pointer;
+  min-height: 48px; font-family: 'Nunito'; box-shadow: var(--sombra-soft);
+  transition: background .15s ease, transform .15s ease; flex: 1 1 auto; max-width: 260px;
+}
+.compartir-btn:hover { background: var(--verde-d); }
+.compartir-btn:active { transform: scale(.98); }
+.compartir-btn.alt { background: var(--azul); }
+.compartir-btn.alt:hover { background: var(--azul-d); }
+/* ---------- Actividades / Material ---------- */
+.material {
+  background: linear-gradient(140deg, #fbf0d4 0%, #f9e6e1 100%);
+  border: 1px solid #eed79e; border-radius: var(--radio);
+  padding: 16px 16px 18px; margin-bottom: 20px;
+}
+.material-title { display: flex; align-items: center; gap: 8px; color: #8a6512; font-size: 1.08rem; }
+.material-sub { color: #8a7330; font-size: .88rem; margin: 4px 0 12px; }
+.material-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.material-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--blanco); border: 1px solid #e8d9b6; color: var(--azul-d);
+  border-radius: 999px; padding: 12px 18px; font-weight: 800; font-size: .95rem;
+  cursor: pointer; min-height: 48px; font-family: 'Nunito'; flex: 1 1 auto;
+  box-shadow: var(--sombra-soft); transition: transform .15s ease, background .15s ease;
+}
+.material-btn:hover { background: var(--crema-2); }
+.material-btn:active { transform: scale(.98); }
+.material-btn.full { width: 100%; margin-top: 14px; background: var(--verde); color: #fff; border-color: var(--verde); }
+.material-btn.full:hover { background: var(--verde-d); }
+
+.actividad {
+  background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio);
+  box-shadow: var(--sombra); overflow: hidden;
+}
+.actividad.open { box-shadow: 0 12px 30px rgba(46,107,126,.13); }
+.actividad-head {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  background: none; border: none; cursor: pointer; text-align: left; padding: 15px;
+}
+.actividad-tit { display: flex; flex-direction: column; flex: 1; gap: 3px; }
+.act-arrow { transition: transform .2s ease; }
+.act-arrow.rot { transform: rotate(90deg); }
+.actividad-body { padding: 0 16px 16px; }
+.act-h { color: var(--azul-d); font-family: 'Nunito'; font-size: .98rem; margin: 6px 0 8px; }
+.act-mat { list-style: none; margin-bottom: 6px; }
+.act-mat li {
+  position: relative; padding: 7px 12px 7px 26px; margin-bottom: 6px;
+  background: var(--crema); border: 1px solid var(--linea); border-radius: 11px; font-size: .94rem;
+}
+.act-mat li::before { content: '•'; position: absolute; left: 12px; top: 6px; color: var(--amarillo); font-weight: 900; }
+/* ---------- Sonidos relajados ---------- */
+/* ---------- Sonidos relajados ---------- */
+.sonidos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 18px 4px; }
+.sonido {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  background: var(--blanco); border: 2px solid var(--linea); border-radius: var(--radio-sm);
+  padding: 18px 10px; cursor: pointer; min-height: 110px; justify-content: center;
+  box-shadow: var(--sombra-soft); transition: transform .15s ease, border-color .2s ease, background .2s ease;
+}
+.sonido:active { transform: scale(.98); }
+.sonido.on { background: #f3f9fa; box-shadow: 0 8px 22px rgba(46,107,126,.16); }
+.sonido-ic { display: inline-flex; }
+.sonido-t { font-weight: 800; color: var(--azul-d); font-size: 1rem; font-family: 'Nunito'; }
+.sonido-st { display: inline-flex; align-items: center; gap: 5px; color: var(--gris); font-size: .82rem; font-weight: 700; }
+.sonido.on .sonido-st { color: var(--verde-d); }
+
+.sonidos-ctrl {
+  background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio-sm);
+  padding: 16px; margin: 6px 4px; box-shadow: var(--sombra-soft); text-align: left;
+}
+.sonidos-vol { display: flex; align-items: center; gap: 12px; color: var(--azul-d); margin-bottom: 16px; }
+.sonidos-vol input[type="range"] { flex: 1; accent-color: var(--azul); height: 28px; }
+.sonidos-timer-lbl { display: flex; align-items: center; gap: 7px; color: var(--azul-d); font-weight: 800; margin-bottom: 10px; font-family: 'Nunito'; }
+.tiempos { display: flex; flex-wrap: wrap; gap: 7px; }
+.tiempo {
+  border: 1px solid var(--linea); background: var(--crema); border-radius: 999px;
+  padding: 8px 13px; font-size: .85rem; font-weight: 700; color: var(--gris); cursor: pointer; min-height: 40px;
+}
+.tiempo.on { background: var(--azul); color: #fff; border-color: var(--azul); }
+/* ---------- Diario: herramientas y borrar ---------- */
+.diario-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.diario-tool {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #fff; border: 1px solid var(--linea); border-radius: 999px;
+  padding: 7px 13px; font-size: .82rem; font-weight: 700; color: var(--azul-d);
+  cursor: pointer; min-height: 38px; font-family: 'Nunito';
+}
+.diario-tool:hover { background: var(--crema-2); }
+.diario-tool.danger { color: var(--terracota); border-color: #f0cdc4; }
+.diario-tool.danger:hover { background: #fdf3f0; }
+.diario-confirm { display: inline-flex; align-items: center; gap: 6px; font-size: .82rem; font-weight: 700; color: var(--terracota); }
+.reg-del {
+  position: absolute; top: 8px; right: 8px;
+  border: none; background: none; cursor: pointer; color: #c2b8a8;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 8px;
+}
+.reg-del:hover { color: var(--terracota); background: #fdf3f0; }

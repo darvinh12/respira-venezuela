@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { Eye, Hand, Ear, Flower2, Citrus, Sparkles, Heart, Activity, Cloud, Flame, Home, HeartHandshake } from 'lucide-react'
+import {
+  Eye, Hand, Ear, Flower2, Citrus, Sparkles, Heart, Activity, Cloud, Flame, Home, HeartHandshake,
+  CloudRain, Waves, Wind, Music2, Pause, Play, Volume2, Timer,
+} from 'lucide-react'
 
 // Componente de respiración animada reutilizable (acepta distintos patrones).
 function Breath({ titulo, sub, fases, fuente }) {
@@ -35,6 +38,8 @@ function Breath({ titulo, sub, fases, fuente }) {
         >
           <span
             className="breath-word"
+            role="status"
+            aria-live="polite"
             style={{
               transform: `scale(${activo ? (fase.w || 1) : 1})`,
               transitionDuration: `${activo ? fase.dur : 400}ms`,
@@ -112,8 +117,8 @@ export function Grounding() {
           <span className="ground-icon" style={{ color: pasos[paso].color }}>
             {(() => { const I = pasos[paso].Ic; return <I size={46} aria-hidden="true" /> })()}
           </span>
-          <div className="ground-num" style={{ color: pasos[paso].color }}>{pasos[paso].n}</div>
-          <div className="ground-text">{pasos[paso].sentido}</div>
+          <div className="ground-num" style={{ color: pasos[paso].color }} aria-hidden="true">{pasos[paso].n}</div>
+          <div className="ground-text" role="status" aria-live="polite" aria-label={`${pasos[paso].n} ${pasos[paso].sentido}`}>{pasos[paso].sentido}</div>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
             Listo, siguiente →
           </button>
@@ -195,7 +200,7 @@ export function Musculos() {
       {!fin ? (
         <div className="ground-card" style={{ borderColor: '#2E6B7E' }}>
           <span className="ground-icon" style={{ color: '#2E6B7E' }}><Activity size={44} aria-hidden="true" /></span>
-          <div className="ground-text" style={{ marginBottom: 6 }}>{grupos[paso].zona}</div>
+          <div className="ground-text" style={{ marginBottom: 6 }} role="status" aria-live="polite">{grupos[paso].zona}</div>
           <p className="tool-sub" style={{ margin: '0 8px 14px' }}>{grupos[paso].accion}<br />Tensa 5 s… y suelta 10 s.</p>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
             Hecho, siguiente →
@@ -235,7 +240,7 @@ export function LugarSeguro() {
       {!fin ? (
         <div className="ground-card" style={{ borderColor: '#7FA88B' }}>
           <span className="ground-icon" style={{ color: '#7FA88B' }}><Cloud size={44} aria-hidden="true" /></span>
-          <div className="ground-text" style={{ fontSize: '1.08rem' }}>{pasos[paso]}</div>
+          <div className="ground-text" style={{ fontSize: '1.08rem' }} role="status" aria-live="polite">{pasos[paso]}</div>
           <button className="accion-rapida" onClick={() => setPaso(paso + 1)}>
             {paso === pasos.length - 1 ? 'Terminar' : 'Continuar →'}
           </button>
@@ -459,6 +464,184 @@ export function FrasesSeguridad() {
       <h3 className="bloque-title evitar-title"><Hand size={20} aria-hidden="true" /> Mejor evita</h3>
       <ul className="evitar">{evitar.map((t, k) => <li key={k}>{t}</li>)}</ul>
       <p className="fuente" style={{ textAlign: 'center' }}>Cómo hablar con niños tras una catástrofe · UNICEF / Save the Children</p>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// SONIDOS RELAJADOS — generados con Web Audio API (funcionan sin internet).
+// No dependen de archivos de audio: se sintetizan en el dispositivo.
+// ---------------------------------------------------------------------------
+function crearRuido(ctx, tipo) {
+  const len = ctx.sampleRate * 2
+  const buffer = ctx.createBuffer(1, len, ctx.sampleRate)
+  const d = buffer.getChannelData(0)
+  if (tipo === 'brown') {
+    let last = 0
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5 }
+  } else if (tipo === 'pink') {
+    let b0 = 0, b1 = 0, b2 = 0
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1
+      b0 = 0.99765 * b0 + w * 0.0990460
+      b1 = 0.96300 * b1 + w * 0.2965164
+      b2 = 0.57000 * b2 + w * 1.0526913
+      d[i] = (b0 + b1 + b2 + w * 0.1848) * 0.2
+    }
+  } else {
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1
+  }
+  return buffer
+}
+
+function construirSonido(ctx, master, id) {
+  const nodos = []
+  if (id === 'lluvia') {
+    const src = ctx.createBufferSource(); src.buffer = crearRuido(ctx, 'white'); src.loop = true
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 600
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6500
+    const g = ctx.createGain(); g.gain.value = 0.5
+    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(master); src.start()
+    nodos.push(src)
+  } else if (id === 'olas') {
+    const src = ctx.createBufferSource(); src.buffer = crearRuido(ctx, 'brown'); src.loop = true
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700
+    const g = ctx.createGain(); g.gain.value = 0.42
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.1
+    const lfoG = ctx.createGain(); lfoG.gain.value = 0.35
+    lfo.connect(lfoG); lfoG.connect(g.gain)
+    src.connect(lp); lp.connect(g); g.connect(master); src.start(); lfo.start()
+    nodos.push(src, lfo)
+  } else if (id === 'viento') {
+    const src = ctx.createBufferSource(); src.buffer = crearRuido(ctx, 'pink'); src.loop = true
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = 0.7
+    const g = ctx.createGain(); g.gain.value = 0.5
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.08
+    const lfoG = ctx.createGain(); lfoG.gain.value = 300
+    lfo.connect(lfoG); lfoG.connect(bp.frequency)
+    src.connect(bp); bp.connect(g); g.connect(master); src.start(); lfo.start()
+    nodos.push(src, lfo)
+  } else if (id === 'tono') {
+    const freqs = [196.0, 246.94, 293.66] // acorde cálido (Sol mayor)
+    const g = ctx.createGain(); g.gain.value = 0.12
+    const trem = ctx.createOscillator(); trem.frequency.value = 0.15
+    const tremG = ctx.createGain(); tremG.gain.value = 0.04
+    trem.connect(tremG); tremG.connect(g.gain)
+    freqs.forEach((f, idx) => {
+      const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f; o.detune.value = (idx - 1) * 4
+      o.connect(g); o.start(); nodos.push(o)
+    })
+    g.connect(master); trem.start(); nodos.push(trem)
+  }
+  return nodos
+}
+
+export function Sonidos() {
+  const SONIDOS = [
+    { id: 'lluvia', t: 'Lluvia', Ic: CloudRain, color: '#2E6B7E' },
+    { id: 'olas', t: 'Olas del mar', Ic: Waves, color: '#357d92' },
+    { id: 'viento', t: 'Viento suave', Ic: Wind, color: '#7FA88B' },
+    { id: 'tono', t: 'Tono cálido', Ic: Music2, color: '#E0A93E' },
+  ]
+  const TIEMPOS = [
+    { m: 0, t: 'Sin límite' }, { m: 5, t: '5 min' }, { m: 10, t: '10 min' }, { m: 15, t: '15 min' }, { m: 20, t: '20 min' },
+  ]
+
+  const [activo, setActivo] = useState(null)
+  const [vol, setVol] = useState(0.6)
+  const [mins, setMins] = useState(0)
+
+  const ctxRef = useRef(null)
+  const masterRef = useRef(null)
+  const nodosRef = useRef([])
+  const timerRef = useRef(null)
+
+  const asegurarCtx = () => {
+    if (!ctxRef.current) {
+      const AC = window.AudioContext || window.webkitAudioContext
+      const ctx = new AC()
+      const master = ctx.createGain()
+      master.gain.value = vol
+      master.connect(ctx.destination)
+      ctxRef.current = ctx
+      masterRef.current = master
+    }
+    return ctxRef.current
+  }
+
+  const pararNodos = () => {
+    nodosRef.current.forEach((n) => { try { n.stop() } catch { /* */ } try { n.disconnect() } catch { /* */ } })
+    nodosRef.current = []
+  }
+  const limpiarTimer = () => { if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null } }
+  const armarTimer = (m) => { limpiarTimer(); if (m > 0) timerRef.current = setTimeout(() => { pararNodos(); setActivo(null) }, m * 60000) }
+
+  const seleccionar = (id) => {
+    const ctx = asegurarCtx()
+    if (ctx.state === 'suspended') ctx.resume()
+    pararNodos()
+    if (activo === id) { setActivo(null); limpiarTimer(); return }
+    nodosRef.current = construirSonido(ctx, masterRef.current, id)
+    setActivo(id)
+    armarTimer(mins)
+  }
+
+  // Volumen en vivo
+  useEffect(() => {
+    if (masterRef.current && ctxRef.current) {
+      masterRef.current.gain.setTargetAtTime(vol, ctxRef.current.currentTime, 0.05)
+    }
+  }, [vol])
+
+  // Re-armar el temporizador si cambia mientras suena
+  useEffect(() => { if (activo) armarTimer(mins) }, [mins]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Limpieza total al salir
+  useEffect(() => () => {
+    limpiarTimer(); pararNodos()
+    if (ctxRef.current) { try { ctxRef.current.close() } catch { /* */ } }
+  }, [])
+
+  return (
+    <div className="tool">
+      <h1>Sonidos para calmar</h1>
+      <p className="tool-sub">Sonidos suaves para relajarte, acompañarte o ayudarte a dormir. Funcionan sin internet.</p>
+
+      <div className="sonidos-grid">
+        {SONIDOS.map((s) => {
+          const on = activo === s.id
+          return (
+            <button key={s.id} className={'sonido' + (on ? ' on' : '')} onClick={() => seleccionar(s.id)}
+              style={on ? { borderColor: s.color } : undefined} aria-pressed={on}>
+              <span className="sonido-ic" style={{ color: s.color }}><s.Ic size={30} aria-hidden="true" /></span>
+              <span className="sonido-t">{s.t}</span>
+              <span className="sonido-st">
+                {on ? <><Pause size={14} aria-hidden="true" /> Sonando</> : <><Play size={14} aria-hidden="true" /> Tocar</>}
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="sonidos-ctrl">
+        <label className="sonidos-vol">
+          <Volume2 size={18} aria-hidden="true" />
+          <input type="range" min="0" max="1" step="0.01" value={vol}
+            onChange={(e) => setVol(Number(e.target.value))} aria-label="Volumen" />
+        </label>
+        <div className="sonidos-timer">
+          <span className="sonidos-timer-lbl"><Timer size={18} aria-hidden="true" /> Temporizador</span>
+          <div className="tiempos">
+            {TIEMPOS.map((t) => (
+              <button key={t.m} className={'tiempo' + (mins === t.m ? ' on' : '')} onClick={() => setMins(t.m)} aria-pressed={mins === t.m}>
+                {t.t}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <p className="fuente">Sonido ambiental generado en tu dispositivo · funciona sin conexión</p>
     </div>
   )
 }

@@ -1,21 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Heart, Baby, Users, Siren, Wind, Activity, Moon, Home as HomeIcon, HeartCrack, CloudRain,
   CircleHelp, MessagesSquare, ToyBrick, HeartHandshake, Ear, CircleOff, Accessibility,
   LifeBuoy, MessageSquareWarning, Flame, Phone, Play, NotebookPen, House, ChevronRight,
   ChevronLeft, X, Globe, ArrowRight, CheckCircle2, Hand, ExternalLink, Square, Cloud, Sparkles,
+  Share2, Download, Trash2, Music, BookOpen, Palette, Pencil, Box, Sprout, Star, ListChecks,
 } from 'lucide-react'
-import { personas, situaciones, guias, directorio, videos } from './data.js'
+import { personas, situaciones, guias, directorio, videos, actividades } from './data.js'
 import {
   Respiracion, Grounding, RespiracionCaja, Mariposa, Musculos, LugarSeguro,
-  FrascoCalma, RespiracionPeluche, SoplarVela, RinconCalma, FrasesSeguridad,
+  FrascoCalma, RespiracionPeluche, SoplarVela, RinconCalma, FrasesSeguridad, Sonidos,
 } from './Herramientas.jsx'
+
+// Datos para compartir la app (Web Share API).
+const SHARE_DATA = {
+  title: 'Respira Venezuela',
+  text: 'Apoyo psicológico gratuito tras el terremoto: guías paso a paso, ejercicios de calma y números de ayuda verificados.',
+  url: 'https://respira-venezuela.pages.dev/',
+}
 
 // Mapa de nombres (en data.js) a componentes de ícono Lucide
 const ICONS = {
   Heart, Baby, Users, Siren, Wind, Activity, Moon, Home: HomeIcon, HeartCrack, CloudRain,
   CircleHelp, MessagesSquare, ToyBrick, HeartHandshake, Ear, CircleOff, Accessibility,
   LifeBuoy, MessageSquareWarning, Flame, Phone, Play, NotebookPen, House, Hand,
+  Sparkles, Palette, Pencil, Box, Star, ListChecks, Sprout,
 }
 function Icon({ name, size = 24, ...rest }) {
   const C = ICONS[name] || Heart
@@ -26,6 +35,26 @@ export default function App() {
   const [view, setView] = useState({ name: 'home' })
   const [ayuda, setAyuda] = useState(false)
   const [historia, setHistoria] = useState([])
+  const [installEvt, setInstallEvt] = useState(null)
+
+  // Captura el evento de instalación (PWA) para ofrecer "Instalar app".
+  useEffect(() => {
+    const onPrompt = (e) => { e.preventDefault(); setInstallEvt(e) }
+    window.addEventListener('beforeinstallprompt', onPrompt)
+    const onInstalled = () => setInstallEvt(null)
+    window.addEventListener('appinstalled', onInstalled)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onPrompt)
+      window.removeEventListener('appinstalled', onInstalled)
+    }
+  }, [])
+
+  const instalar = async () => {
+    if (!installEvt) return
+    installEvt.prompt()
+    try { await installEvt.userChoice } catch { /* ignore */ }
+    setInstallEvt(null)
+  }
 
   const go = (next) => { setHistoria((h) => [...h, view]); setView(next); window.scrollTo(0, 0) }
   const back = () => {
@@ -42,13 +71,14 @@ export default function App() {
     <div className="app">
       <Header onHome={home} onBack={view.name !== 'home' ? back : null} />
       <main className="main">
-        {view.name === 'home' && <Home go={go} />}
+        {view.name === 'home' && <Home go={go} installEvt={installEvt} instalar={instalar} />}
         {view.name === 'persona' && <Persona personaId={view.personaId} go={go} />}
         {view.name === 'guia' && <Guia guiaId={view.guiaId} accion={accion} />}
         {view.name === 'calma' && <Calma go={go} />}
         {view.name === 'tool' && <Tool tool={view.tool} />}
         {view.name === 'directorio' && <Directorio />}
         {view.name === 'videos' && <Videos />}
+        {view.name === 'actividades' && <Actividades />}
         {view.name === 'diario' && <Diario />}
         <Footer />
       </main>
@@ -80,7 +110,7 @@ function Header({ onHome, onBack }) {
   )
 }
 
-function Home({ go }) {
+function Home({ go, installEvt, instalar }) {
   return (
     <>
       <img className="home-logo" src="/logo.png" alt="Respira Venezuela — Apoyo psicológico" />
@@ -108,16 +138,52 @@ function Home({ go }) {
 
       <div className="quick-row">
         <button className="quick" onClick={() => go({ name: 'calma' })}><span className="quick-ic chip-azul"><Wind size={22} /></span>Calma ya</button>
+        <button className="quick" onClick={() => go({ name: 'tool', tool: 'sonidos' })}><span className="quick-ic chip-verde"><Music size={22} /></span>Sonidos</button>
+        <button className="quick" onClick={() => go({ name: 'actividades' })}><span className="quick-ic chip-amarillo"><ListChecks size={22} /></span>Actividades</button>
         <button className="quick" onClick={() => go({ name: 'directorio' })}><span className="quick-ic chip-verde"><Phone size={22} /></span>Números</button>
         <button className="quick" onClick={() => go({ name: 'videos' })}><span className="quick-ic chip-amarillo"><Play size={22} /></span>Videos</button>
         <button className="quick" onClick={() => go({ name: 'diario' })}><span className="quick-ic chip-terracota"><NotebookPen size={22} /></span>Mi diario</button>
       </div>
+
+      <CompartirInstalar installEvt={installEvt} instalar={instalar} />
 
       <p className="disclaimer">
         Respira es apoyo de primera línea, <strong>no reemplaza</strong> la atención profesional ni los servicios de emergencia.
         Si hay peligro para la vida, llama al <a href="tel:171">171</a>.
       </p>
     </>
+  )
+}
+
+// Compartir la app (difunde las líneas de ayuda) e instalarla en el teléfono.
+function CompartirInstalar({ installEvt, instalar }) {
+  const [copiado, setCopiado] = useState(false)
+
+  const compartir = async () => {
+    try {
+      if (navigator.share) { await navigator.share(SHARE_DATA); return }
+    } catch { return /* el usuario canceló */ }
+    try {
+      await navigator.clipboard.writeText(SHARE_DATA.url)
+      setCopiado(true)
+      setTimeout(() => setCopiado(false), 2200)
+    } catch { /* sin portapapeles */ }
+  }
+
+  return (
+    <section className="compartir" aria-label="Compartir e instalar">
+      <p className="compartir-msg">Ayuda a que esto llegue a quien lo necesita.</p>
+      <div className="compartir-row">
+        <button className="compartir-btn" onClick={compartir}>
+          <Share2 size={19} aria-hidden="true" /> {copiado ? '¡Enlace copiado!' : 'Compartir Respira'}
+        </button>
+        {installEvt && (
+          <button className="compartir-btn alt" onClick={instalar}>
+            <Download size={19} aria-hidden="true" /> Instalar app
+          </button>
+        )}
+      </div>
+    </section>
   )
 }
 
@@ -247,6 +313,11 @@ function Calma({ go }) {
           <span className="card-title">Tu lugar seguro</span>
           <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
         </button>
+        <button className="card sit-card" onClick={() => go({ name: 'tool', tool: 'sonidos' })}>
+          <span className="chip chip-azul"><Music size={24} /></span>
+          <span className="card-title">Sonidos para calmar</span>
+          <ChevronRight className="card-arrow" size={22} aria-hidden="true" />
+        </button>
       </div>
     </>
   )
@@ -264,6 +335,7 @@ function Tool({ tool }) {
   if (tool === 'vela') return <SoplarVela />
   if (tool === 'rincon') return <RinconCalma />
   if (tool === 'frases') return <FrasesSeguridad />
+  if (tool === 'sonidos') return <Sonidos />
   return null
 }
 
@@ -326,6 +398,127 @@ function Videos() {
   )
 }
 
+// Descarga un texto como archivo (offline). Reutilizado por actividades y material.
+function descargarTexto(nombre, contenido) {
+  const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = nombre
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function textoActividad(a) {
+  const mat = a.materiales?.length
+    ? `Materiales:\n${a.materiales.map((m) => `  • ${m}`).join('\n')}\n\n`
+    : ''
+  const pasos = a.pasos.map((p, i) => `  ${i + 1}. ${p}`).join('\n')
+  return `${a.titulo}  (${a.grupo})\n\n${a.intro}\n\n${mat}Paso a paso:\n${pasos}\n\nFuente: ${a.fuente}\n\n— Respira Venezuela`
+}
+
+function textoNumeros() {
+  let out = 'NÚMEROS DE AYUDA · Respira Venezuela\n\n'
+  directorio.forEach((b) => {
+    out += `— ${b.grupo} —\n`
+    b.items.forEach((it) => {
+      const tels = (it.tels || []).join(' · ')
+      out += `${it.nombre}: ${tels}${it.web ? ` (${it.web})` : ''}\n  ${it.detalle}\n\n`
+    })
+  })
+  out += 'Si hay peligro para la vida, llama al 171.\n'
+  return out
+}
+
+function textoGuiaBolsillo() {
+  let out = 'GUÍA DE BOLSILLO · Respira Venezuela\nApoyo psicológico tras el terremoto\n\n'
+  out += '========================\nNÚMEROS DE AYUDA\n========================\n\n'
+  directorio.forEach((b) => {
+    out += `— ${b.grupo} —\n`
+    b.items.forEach((it) => {
+      const tels = (it.tels || []).join(' · ')
+      out += `${it.nombre}: ${tels}${it.web ? ` (${it.web})` : ''}\n  ${it.detalle}\n`
+    })
+    out += '\n'
+  })
+  out += '\n========================\nGUÍAS PASO A PASO\n========================\n'
+  Object.values(guias).forEach((g) => {
+    out += `\n### ${g.titulo} ###\n${g.intro}\n\nQué puedes hacer:\n`
+    out += g.pasos.map((p, i) => `  ${i + 1}. ${p}`).join('\n')
+    out += '\n\nMejor evita:\n' + g.evitar.map((e) => `  x ${e}`).join('\n')
+    out += `\n\n¿Cuándo buscar ayuda profesional?\n  ${g.cuandoBuscar}\n  Fuente: ${g.fuente}\n`
+  })
+  out += '\n\nRespira es apoyo de primera línea, no reemplaza la atención profesional ni los servicios de emergencia. Si hay peligro para la vida, llama al 171.\n'
+  return out
+}
+
+function Actividades() {
+  const [abierta, setAbierta] = useState(null)
+  const grupos = [...new Set(actividades.map((a) => a.grupo))]
+
+  return (
+    <>
+      <section className="persona-head">
+        <span className="chip big chip-amarillo"><ListChecks size={34} /></span>
+        <h1>Actividades</h1>
+        <p>Ejercicios para hacer en casa, a tu ritmo. Puedes descargarlos para imprimir o guardar.</p>
+      </section>
+
+      <div className="material">
+        <h3 className="material-title"><Download size={18} aria-hidden="true" /> Material para descargar</h3>
+        <p className="material-sub">Guárdalo en tu teléfono para tenerlo aunque no haya internet.</p>
+        <div className="material-btns">
+          <button className="material-btn" onClick={() => descargarTexto('guia-de-bolsillo-respira.txt', textoGuiaBolsillo())}>
+            <BookOpen size={18} aria-hidden="true" /> Guía de bolsillo
+          </button>
+          <button className="material-btn" onClick={() => descargarTexto('numeros-de-ayuda-respira.txt', textoNumeros())}>
+            <Phone size={18} aria-hidden="true" /> Números de ayuda
+          </button>
+        </div>
+      </div>
+
+      {grupos.map((grupo) => (
+        <div key={grupo} className="dir-grupo">
+          <h3>{grupo}</h3>
+          <div className="cards">
+            {actividades.filter((a) => a.grupo === grupo).map((a) => {
+              const open = abierta === a.id
+              return (
+                <div key={a.id} className={'actividad' + (open ? ' open' : '')}>
+                  <button className="actividad-head" onClick={() => setAbierta(open ? null : a.id)} aria-expanded={open}>
+                    <span className="chip chip-amarillo"><Icon name={a.icon} size={24} /></span>
+                    <span className="actividad-tit">
+                      <span className="card-title">{a.titulo}</span>
+                      <span className="card-desc">{a.intro}</span>
+                    </span>
+                    <ChevronRight className={'card-arrow act-arrow' + (open ? ' rot' : '')} size={22} aria-hidden="true" />
+                  </button>
+                  {open && (
+                    <div className="actividad-body">
+                      {a.materiales?.length > 0 && (
+                        <>
+                          <h4 className="act-h">Materiales</h4>
+                          <ul className="act-mat">{a.materiales.map((m, i) => <li key={i}>{m}</li>)}</ul>
+                        </>
+                      )}
+                      <h4 className="act-h">Paso a paso</h4>
+                      <ol className="pasos">{a.pasos.map((p, i) => <li key={i}>{p}</li>)}</ol>
+                      <p className="fuente">Fuente: {a.fuente}</p>
+                      <button className="material-btn full" onClick={() => descargarTexto(`actividad-${a.id}.txt`, textoActividad(a))}>
+                        <Download size={18} aria-hidden="true" /> Descargar esta actividad
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+
 function Diario() {
   const ANIMOS = [
     { v: 1, e: '😣', t: 'Muy mal' },
@@ -337,6 +530,7 @@ function Diario() {
   const [registros, setRegistros] = useState([])
   const [animo, setAnimo] = useState(3)
   const [nota, setNota] = useState('')
+  const [confirmar, setConfirmar] = useState(false)
 
   useEffect(() => {
     try {
@@ -345,12 +539,26 @@ function Diario() {
     } catch { /* ignore */ }
   }, [])
 
-  const guardar = () => {
-    const fecha = new Date().toLocaleString('es-VE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-    const next = [{ animo, nota, fecha }, ...registros].slice(0, 60)
+  const persistir = (next) => {
     setRegistros(next)
     try { localStorage.setItem('respira_diario', JSON.stringify(next)) } catch { /* ignore */ }
+  }
+
+  const guardar = () => {
+    const fecha = new Date().toLocaleString('es-VE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+    persistir([{ animo, nota, fecha }, ...registros].slice(0, 60))
     setNota('')
+  }
+
+  const borrar = (idx) => persistir(registros.filter((_, i) => i !== idx))
+  const borrarTodo = () => { persistir([]); setConfirmar(false) }
+
+  const exportar = () => {
+    const texto = registros.map((r) => {
+      const cara = ANIMOS.find((a) => a.v === r.animo)
+      return `${r.fecha} — ${cara ? cara.t : r.animo}/5${r.nota ? `\n  ${r.nota}` : ''}`
+    }).join('\n\n')
+    descargarTexto('mi-diario-respira.txt', `Mi diario · Respira Venezuela\n\n${texto}\n`)
   }
 
   return (
@@ -362,7 +570,7 @@ function Diario() {
       </section>
 
       <div className="diario-form">
-        <label className="diario-label" id="animo-label">¿Cómo te sientes ahora?</label>
+        <span className="diario-label" id="animo-label">¿Cómo te sientes ahora?</span>
         <div className="animo-row" role="group" aria-labelledby="animo-label">
           {ANIMOS.map((a) => (
             <button key={a.v} className={'animo' + (animo === a.v ? ' on' : '')} onClick={() => setAnimo(a.v)} aria-pressed={animo === a.v} aria-label={a.t}>
@@ -377,7 +585,25 @@ function Diario() {
 
       {registros.length > 0 && (
         <div className="diario-historial">
-          <h3>Tu evolución</h3>
+          <div className="diario-hist-head">
+            <h3>Tu evolución</h3>
+            <div className="diario-tools">
+              <button className="diario-tool" onClick={exportar} aria-label="Exportar mi diario a un archivo">
+                <Download size={16} aria-hidden="true" /> Exportar
+              </button>
+              {confirmar ? (
+                <span className="diario-confirm">
+                  ¿Seguro?
+                  <button className="diario-tool danger" onClick={borrarTodo}>Sí, borrar</button>
+                  <button className="diario-tool" onClick={() => setConfirmar(false)}>No</button>
+                </span>
+              ) : (
+                <button className="diario-tool danger" onClick={() => setConfirmar(true)} aria-label="Borrar todos los registros">
+                  <Trash2 size={16} aria-hidden="true" /> Borrar todo
+                </button>
+              )}
+            </div>
+          </div>
           <div className="grafico" role="img" aria-label="Gráfico de tu ánimo en los últimos registros">
             {registros.slice(0, 14).reverse().map((r, i) => (
               <div key={i} className="barra" style={{ height: `${r.animo * 18}px`, background: barColor(r.animo) }} title={`${r.fecha}: ${r.animo}/5`} />
@@ -389,6 +615,9 @@ function Diario() {
                 <span className="reg-emo" aria-hidden="true">{ANIMOS.find((a) => a.v === r.animo)?.e}</span>
                 <span className="reg-fecha">{r.fecha}</span>
                 {r.nota && <span className="reg-nota">{r.nota}</span>}
+                <button className="reg-del" onClick={() => borrar(i)} aria-label={`Borrar registro del ${r.fecha}`}>
+                  <Trash2 size={15} aria-hidden="true" />
+                </button>
               </li>
             ))}
           </ul>
@@ -431,9 +660,27 @@ function Nav({ view, go, home }) {
 
 function AyudaAhora({ onClose, go }) {
   const psico = directorio[0].items.slice(0, 3) // líneas clave; el resto en el directorio
+  const modalRef = useRef(null)
+
+  // Accesibilidad: cierra con Escape, bloquea el scroll de fondo, mueve el foco
+  // al diálogo al abrir y lo devuelve al cerrar.
+  useEffect(() => {
+    const prevActivo = document.activeElement
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    modalRef.current?.focus()
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+      if (prevActivo && prevActivo.focus) prevActivo.focus()
+    }
+  }, [onClose])
+
   return (
     <div className="modal-bg" onClick={onClose} role="dialog" aria-modal="true" aria-label="Ayuda inmediata">
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal" ref={modalRef} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
         <div className="modal-grip" aria-hidden="true" />
         <div className="modal-scroll">
           <h2><LifeBuoy size={22} aria-hidden="true" /> Ayuda ahora</h2>
