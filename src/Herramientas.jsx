@@ -630,8 +630,19 @@ export function FrasesSeguridad() {
 // SONIDOS RELAJADOS — generados con Web Audio API (funcionan sin internet).
 // No dependen de archivos de audio: se sintetizan en el dispositivo.
 // ---------------------------------------------------------------------------
+function crearReverb(ctx, dur = 3, decay = 2.6) {
+  const rate = ctx.sampleRate
+  const len = Math.floor(rate * dur)
+  const imp = ctx.createBuffer(2, len, rate)
+  for (let ch = 0; ch < 2; ch++) {
+    const d = imp.getChannelData(ch)
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay)
+  }
+  return imp
+}
+
 function crearRuido(ctx, tipo) {
-  const len = ctx.sampleRate * 2
+  const len = ctx.sampleRate * 4 // buffer largo: menos repetición audible
   const buffer = ctx.createBuffer(1, len, ctx.sampleRate)
   const d = buffer.getChannelData(0)
   if (tipo === 'brown') {
@@ -655,41 +666,57 @@ function crearRuido(ctx, tipo) {
 function construirSonido(ctx, master, id) {
   const nodos = []
   if (id === 'lluvia') {
+    // Lluvia: ruido filtrado suave (sin hiss agudo) con un leve vaivén.
     const src = ctx.createBufferSource(); src.buffer = crearRuido(ctx, 'white'); src.loop = true
-    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 600
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6500
-    const g = ctx.createGain(); g.gain.value = 0.5
-    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(master); src.start()
-    nodos.push(src)
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 350
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4600; lp.Q.value = 0.5
+    const g = ctx.createGain(); g.gain.value = 0.3
+    const trem = ctx.createOscillator(); trem.frequency.value = 0.3
+    const tremG = ctx.createGain(); tremG.gain.value = 0.06
+    trem.connect(tremG); tremG.connect(g.gain)
+    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(master)
+    src.start(); trem.start()
+    nodos.push(src, trem, g)
   } else if (id === 'olas') {
+    // Olas: el sonido sube y se aclara al romper, y baja al retirarse.
     const src = ctx.createBufferSource(); src.buffer = crearRuido(ctx, 'brown'); src.loop = true
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700
-    const g = ctx.createGain(); g.gain.value = 0.42
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.1
-    const lfoG = ctx.createGain(); lfoG.gain.value = 0.35
-    lfo.connect(lfoG); lfoG.connect(g.gain)
-    src.connect(lp); lp.connect(g); g.connect(master); src.start(); lfo.start()
-    nodos.push(src, lfo)
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 450; lp.Q.value = 0.6
+    const g = ctx.createGain(); g.gain.value = 0.33
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07
+    const swellG = ctx.createGain(); swellG.gain.value = 0.2
+    const brightG = ctx.createGain(); brightG.gain.value = 360
+    lfo.connect(swellG); swellG.connect(g.gain)
+    lfo.connect(brightG); brightG.connect(lp.frequency)
+    src.connect(lp); lp.connect(g); g.connect(master)
+    src.start(); lfo.start()
+    nodos.push(src, lfo, g)
   } else if (id === 'viento') {
+    // Viento: ruido medio con ráfagas lentas (sin silbido de bandpass).
     const src = ctx.createBufferSource(); src.buffer = crearRuido(ctx, 'pink'); src.loop = true
-    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = 0.7
-    const g = ctx.createGain(); g.gain.value = 0.5
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.08
-    const lfoG = ctx.createGain(); lfoG.gain.value = 300
-    lfo.connect(lfoG); lfoG.connect(bp.frequency)
-    src.connect(bp); bp.connect(g); g.connect(master); src.start(); lfo.start()
-    nodos.push(src, lfo)
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 200
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100; lp.Q.value = 0.4
+    const g = ctx.createGain(); g.gain.value = 0.34
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.05
+    const gust = ctx.createGain(); gust.gain.value = 480
+    const swellG = ctx.createGain(); swellG.gain.value = 0.12
+    lfo.connect(gust); gust.connect(lp.frequency)
+    lfo.connect(swellG); swellG.connect(g.gain)
+    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(master)
+    src.start(); lfo.start()
+    nodos.push(src, lfo, g)
   } else if (id === 'tono') {
-    const freqs = [196.0, 246.94, 293.66] // acorde cálido (Sol mayor)
-    const g = ctx.createGain(); g.gain.value = 0.12
-    const trem = ctx.createOscillator(); trem.frequency.value = 0.15
-    const tremG = ctx.createGain(); tremG.gain.value = 0.04
+    // Tono cálido: acorde de senos suave, filtrado y con respiración lenta.
+    const freqs = [196.0, 246.94, 293.66] // Sol mayor
+    const g = ctx.createGain(); g.gain.value = 0.1
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2000; lp.Q.value = 0.3
+    const trem = ctx.createOscillator(); trem.frequency.value = 0.12
+    const tremG = ctx.createGain(); tremG.gain.value = 0.03
     trem.connect(tremG); tremG.connect(g.gain)
     freqs.forEach((f, idx) => {
       const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f; o.detune.value = (idx - 1) * 4
       o.connect(g); o.start(); nodos.push(o)
     })
-    g.connect(master); trem.start(); nodos.push(trem)
+    g.connect(lp); lp.connect(master); trem.start(); nodos.push(trem, g)
   }
   return nodos
 }
@@ -720,7 +747,16 @@ export function Sonidos() {
       const ctx = new AC()
       const master = ctx.createGain()
       master.gain.value = vol
-      master.connect(ctx.destination)
+      // Calidez: suaviza las altas frecuencias duras del ruido digital.
+      const warm = ctx.createBiquadFilter()
+      warm.type = 'lowpass'; warm.frequency.value = 7800; warm.Q.value = 0.3
+      // Reverberación sutil: da espacio, menos sensación de estática plana.
+      const conv = ctx.createConvolver(); conv.buffer = crearReverb(ctx)
+      const wet = ctx.createGain(); wet.gain.value = 0.2
+      const dry = ctx.createGain(); dry.gain.value = 0.9
+      master.connect(warm)
+      warm.connect(dry); dry.connect(ctx.destination)
+      warm.connect(conv); conv.connect(wet); wet.connect(ctx.destination)
       ctxRef.current = ctx
       masterRef.current = master
     }
