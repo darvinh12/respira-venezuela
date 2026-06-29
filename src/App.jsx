@@ -317,7 +317,7 @@ function Guia({ guiaId, accion }) {
     <article className="guia">
       <h1>{g.titulo}</h1>
       <p className="guia-intro">{g.intro}</p>
-      <div className="escuchar-row"><BotonEscuchar texto={textoVoz} etiqueta="Escuchar esta guía" /></div>
+      <div className="escuchar-row"><BotonEscuchar src={`/audio/guia-${guiaId}.mp3`} texto={textoVoz} etiqueta="Escuchar esta guía" /></div>
 
       {g.accionRapida && (
         <button className="accion-rapida" onClick={() => accion(g.accionRapida.tool)}>

@@ -333,7 +333,7 @@ export function Suspiro() {
   const fases = [
     { t: 'Toma aire', dur: 3000, scale: 1.45 },
     { t: 'Un poco más', dur: 1600, scale: 1.7 },
-    { t: 'Suelta… aaah', dur: 6000, scale: 1.0 },
+    { t: 'Suelta el aire', dur: 6000, scale: 1.0 },
   ]
   return (
     <Breath
@@ -591,7 +591,7 @@ export function RinconCalma() {
     <div className="tool" style={{ textAlign: 'left' }}>
       <h1 style={{ textAlign: 'center' }}>Rincón de la calma</h1>
       <p className="tool-sub" style={{ textAlign: 'center' }}>Un espacio seguro en casa para que tu hijo/a regule sus emociones.</p>
-      <div className="escuchar-row"><BotonEscuchar texto={items.join(' ')} etiqueta="Escuchar los pasos" /></div>
+      <div className="escuchar-row"><BotonEscuchar src="/audio/guia-rincon.mp3" texto={items.join(' ')} etiqueta="Escuchar los pasos" /></div>
       <ol className="pasos">{items.map((t, k) => <li key={k}>{t}</li>)}</ol>
       <p className="fuente" style={{ textAlign: 'center' }}>Rincón de la calma · psicología infantil / disciplina positiva</p>
     </div>
@@ -616,7 +616,7 @@ export function FrasesSeguridad() {
     <div className="tool" style={{ textAlign: 'left' }}>
       <h1 style={{ textAlign: 'center' }}>Frases que dan seguridad</h1>
       <p className="tool-sub" style={{ textAlign: 'center' }}>Tus palabras y tu calma son su mayor refugio. Háblale a su altura, mirándolo/a a los ojos.</p>
-      <div className="escuchar-row"><BotonEscuchar texto={'Dile: ' + decir.join(' ') + ' Mejor evita: ' + evitar.join(' ')} etiqueta="Escuchar las frases" /></div>
+      <div className="escuchar-row"><BotonEscuchar src="/audio/guia-frases.mp3" texto={'Dile: ' + decir.join(' ') + ' Mejor evita: ' + evitar.join(' ')} etiqueta="Escuchar las frases" /></div>
       <h3 className="bloque-title hacer"><Heart size={20} aria-hidden="true" /> Dile</h3>
       <ul className="decir">{decir.map((t, k) => <li key={k}>{t}</li>)}</ul>
       <h3 className="bloque-title evitar-title"><Hand size={20} aria-hidden="true" /> Mejor evita</h3>

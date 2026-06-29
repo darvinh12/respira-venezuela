@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Volume2, VolumeX } from 'lucide-react'
 
 // Lectura en voz alta con la voz del propio teléfono (Web Speech API).
@@ -136,13 +136,29 @@ export function callar() {
 }
 
 // Botón para leer un texto a demanda (guías y listas).
-export function BotonEscuchar({ texto, etiqueta = 'Escuchar' }) {
+export function BotonEscuchar({ texto, src, etiqueta = 'Escuchar' }) {
   const [hablando, setHablando] = useState(false)
-  useEffect(() => () => callar(), [])
-  if (!hayVoz()) return null
+  const audioRef = useRef(null)
+  const detener = () => {
+    try { if (audioRef.current) { audioRef.current.pause(); audioRef.current = null } } catch { /* */ }
+    callar()
+  }
+  useEffect(() => () => detener(), []) // eslint-disable-line react-hooks/exhaustive-deps
+  if (!hayVoz() && !src) return null
   const toggle = () => {
-    if (hablando) { callar(); setHablando(false); return }
-    hablar(texto, () => setHablando(false))
+    if (hablando) { detener(); setHablando(false); return }
+    if (src) {
+      // Audio pregrabado de la guía (voz de Sebastián); si falla, voz del sistema.
+      const a = new Audio(src)
+      audioRef.current = a
+      a.onended = () => setHablando(false)
+      const fallback = () => { audioRef.current = null; hablar(texto, () => setHablando(false)) }
+      a.onerror = fallback
+      const p = a.play()
+      if (p && p.catch) p.catch(fallback)
+    } else {
+      hablar(texto, () => setHablando(false))
+    }
     setHablando(true)
   }
   return (
